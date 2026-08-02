@@ -1,0 +1,12 @@
+name = "pana-carlosa-booking"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+[vars]
+# Put your real domain here once the site is live. "*" lets ANY website post
+# through your bot — fine for local testing, not for production.
+ALLOWED_ORIGIN = "*"
+
+# BOT_TOKEN and CHAT_ID are secrets, not vars. Never put them in this file:
+#   wrangler secret put BOT_TOKEN
+#   wrangler secret put CHAT_ID

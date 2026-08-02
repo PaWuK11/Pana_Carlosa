@@ -1,0 +1,11 @@
+# Secrets — BOT_TOKEN / CHAT_ID live here. Never commit.
+.env
+
+# macOS
+.DS_Store
+
+# Machine-local tool settings
+.claude/settings.local.json
+
+# Node
+node_modules/

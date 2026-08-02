@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pana Carlosa — Barber Shop</title>
+<meta name="description" content="Pana Carlosa Barber Shop — tradycyjne barberstwo, klasyczne strzyżenia i golenie na gorący ręcznik.">
+<meta name="theme-color" content="#0f0c09">
+
+<!-- ══ SOCIAL SHARE (edit later) ══ -->
+<meta property="og:title" content="Pana Carlosa — Barber Shop">
+<meta property="og:description" content="Tradycyjne barberstwo i klasyczna pielęgnacja.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400..900&family=Oswald:wght@200..700&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════
+     ICON SPRITE — reused throughout the page. Nothing to edit here.
+     ════════════════════════════════════════════════════════════════ -->
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.4 3h3.1l1.5 4-2 1.5a12.2 12.2 0 0 0 6.5 6.5L17 13l4 1.5v3.1a2 2 0 0 1-2.2 2C10.6 18.9 5.1 13.4 4.4 5.2A2 2 0 0 1 6.4 3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 6.5 12 13l8.5-6.5" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s7-6.4 7-11.4A7 7 0 1 0 5 10.1c0 5 7 11.4 7 11.4z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 6.6V12l3.6 2.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-quote" viewBox="0 0 32 24"><path d="M13.4 0C6.6 1.8 2.6 6.6 2.6 13.6V24h11.5V12.6H8.6c.2-3.5 1.9-5.7 4.8-6.8zm16.2 0c-6.8 1.8-10.8 6.6-10.8 13.6V24h11.5V12.6h-5.5c.2-3.5 1.9-5.7 4.8-6.8z" fill="currentColor"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2.6 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.95z" fill="currentColor"/></symbol>
+  <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="m9 4 8 8-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-chevron-d" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14.2 8.9V7.2c0-.8.2-1.3 1.4-1.3h1.5V3.1h-2.4c-2.9 0-3.9 1.4-3.9 3.9v1.9H8.6v3h2.2V21h3.4v-9.1h2.3l.3-3z" fill="currentColor"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17.1" cy="6.9" r="1.15" fill="currentColor"/></symbol>
+
+  <!-- poster ornaments -->
+  <symbol id="i-corner" viewBox="0 0 60 60"><path d="M2 2h22M2 2v22M8 8h10M8 8v10M2 30c14 0 28-14 28-28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-rays" viewBox="0 0 64 64"><path d="M32 3v11M32 50v11M3 32h11M50 32h11M11 11l8 8M45 45l8 8M53 11l-8 8M19 45l-8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-clipper" viewBox="0 0 80 128"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M18 12h44v14H18z"/><path d="M23 12V5M31 12V5M39 12V5M47 12V5M55 12V5" stroke-linecap="round"/><path d="M21 26h38v70a9 9 0 0 1-9 9H30a9 9 0 0 1-9-9z"/><path d="M28 42h24M28 53h24" stroke-linecap="round" opacity=".7"/><path d="M40 105v6c0 8 8 11 16 11" stroke-linecap="round"/></g></symbol>
+  <symbol id="i-comb" viewBox="0 0 128 44"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M6 26h116v11H6z"/><path d="M14 26V9M23 26V9M32 26V9M41 26V9M50 26V9M59 26V9M68 26V9M77 26V9M86 26V9M95 26V9M104 26V9M113 26V9" stroke-linecap="round"/></g></symbol>
+  <symbol id="i-pole" viewBox="0 0 48 208"><defs><clipPath id="poleClip"><path d="M13 28h22v152H13z"/></clipPath></defs><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M24 4c6 0 10 4 10 10v6H14v-6c0-6 4-10 10-10z"/><rect x="10" y="20" width="28" height="9" rx="2"/><path d="M13 28h22v152H13z"/><g clip-path="url(#poleClip)" opacity=".85"><path d="M9 48 39 28M9 68 39 48M9 88 39 68M9 108 39 88M9 128 39 108M9 148 39 128M9 168 39 148M9 188 39 168"/></g><rect x="10" y="179" width="28" height="9" rx="2"/><path d="M24 204c6 0 10-4 10-10v-6H14v6c0 6 4 10 10 10z"/></g></symbol>
+</svg>
+
+<!-- film grain overlay -->
+<div class="grain" aria-hidden="true"></div>
+
+<a class="skip-link" href="#main" data-en="Skip to content">Przejdź do treści</a>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     1 · STICKY NAVIGATION
+     ════════════════════════════════════════════════════════════════ -->
+<header class="nav" id="siteNav">
+  <div class="nav__inner shell">
+
+    <a class="brand" href="#home" aria-label="Pana Carlosa Barber Shop">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48"><rect x="4" y="4" width="40" height="40" transform="rotate(45 24 24)" fill="none" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"><path d="M17 31 31 17M31 31 17 17"/><circle cx="24" cy="24" r="1.6" fill="currentColor" stroke="none"/></g></svg>
+      </span>
+      <span class="brand__text">
+        <span class="brand__name">Pana Carlosa</span>
+        <span class="brand__sub">Barber Shop</span>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navMenu" aria-label="Main">
+      <a href="#home"        class="nav__link is-active" data-en="Home">Start</a>
+      <a href="#about"       class="nav__link" data-en="About">O nas</a>
+      <a href="#services"    class="nav__link" data-en="Services">Usługi</a>
+      <a href="#gallery"     class="nav__link" data-en="Gallery">Galeria</a>
+      <a href="#barbers"     class="nav__link" data-en="Barber">Barber</a>
+      <a href="#contact"     class="nav__link" data-en="Contact">Kontakt</a>
+      <a href="#appointment" class="btn btn--gold nav__cta-mobile" data-en="Book Appointment">Umów wizytę</a>
+    </nav>
+
+    <div class="lang" role="group" aria-label="Język / Language">
+      <button type="button" class="lang__btn is-on" data-lang="pl">PL</button>
+      <span class="lang__sep" aria-hidden="true"></span>
+      <button type="button" class="lang__btn" data-lang="en">EN</button>
+    </div>
+
+    <a href="#appointment" class="btn btn--gold nav__cta" data-en="Book Appointment">Umów wizytę</a>
+
+    <button class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navMenu"
+            aria-label="Menu" data-en-aria="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+</header>
+
+
+<main id="main">
+
+<!-- ════════════════════════════════════════════════════════════════
+     2 · HERO
+     ════════════════════════════════════════════════════════════════ -->
+<section class="hero" id="home">
+
+  <!-- IMAGE PLACEHOLDER → replace src with your own photo -->
+  <div class="hero__media" aria-hidden="true">
+    <img src="images/hero_bg.jpeg" alt="" id="heroImg">
+  </div>
+  <div class="hero__scrim" aria-hidden="true"></div>
+
+  <!-- poster-style ornamental frame -->
+  <span class="oframe" aria-hidden="true">
+    <i class="oframe__c oframe__c--tl"><svg><use href="#i-corner"/></svg></i>
+    <i class="oframe__c oframe__c--tr"><svg><use href="#i-corner"/></svg></i>
+    <i class="oframe__c oframe__c--bl"><svg><use href="#i-corner"/></svg></i>
+    <i class="oframe__c oframe__c--br"><svg><use href="#i-corner"/></svg></i>
+  </span>
+
+  <!-- barber pole, as on the poster -->
+  <span class="pole" aria-hidden="true"><svg><use href="#i-pole"/></svg></span>
+
+  <div class="hero__rail hero__rail--r">
+    <a href="https://www.instagram.com/afrofashionpolska/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ico"><use href="#i-ig"/></svg></a>
+    <a href="https://www.facebook.com/carlosblondo.tessa.5" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ico"><use href="#i-fb"/></svg></a>
+  </div>
+
+  <div class="hero__inner shell">
+
+    <!-- vintage emblem / monogram -->
+    <div class="emblem" data-reveal>
+      <svg viewBox="0 0 200 200" role="img" aria-label="Pana Carlosa Barber Shop">
+        <defs>
+          <path id="arcTop" d="M100,100 m-74,0 a74,74 0 0,1 148,0" fill="none"/>
+          <path id="arcBot" d="M100,100 m-58,0 a58,58 0 0,0 116,0" fill="none"/>
+        </defs>
+        <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="1" opacity=".55"/>
+        <circle cx="100" cy="100" r="83" fill="none" stroke="currentColor" stroke-width="2.5" opacity=".85"/>
+        <circle cx="100" cy="100" r="66" fill="none" stroke="currentColor" stroke-width=".8" opacity=".4"/>
+        <text class="emblem__arc"><textPath href="#arcTop" startOffset="50%" text-anchor="middle">Pana Carlosa</textPath></text>
+        <text class="emblem__arc emblem__arc--sm"><textPath href="#arcBot" startOffset="50%" text-anchor="middle">Barber Shop</textPath></text>
+        <g stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round">
+          <path d="M74 118 126 74"/><path d="M126 118 74 74"/>
+          <circle cx="100" cy="96" r="3.2" fill="currentColor" stroke="none"/>
+          <path d="M70 122c-3 3-3 6 0 8s6 0 6-3M130 122c3 3 3 6 0 8s-6 0-6-3"/>
+        </g>
+        <path d="M78 137h44" stroke="currentColor" stroke-width="1" opacity=".6"/>
+      </svg>
+    </div>
+
+    <p class="hero__kicker" data-reveal data-en="Traditional barbering · since 2024">Tradycyjne barberstwo · od 2024</p>
+
+    <h1 class="hero__title" data-reveal>
+      <span data-en="Your Style.">Twój styl.</span>
+      <span class="hero__title-2" data-en="Your Confidence.">Twoja pewność siebie.</span>
+    </h1>
+
+    <span class="ornament ornament--light" data-reveal aria-hidden="true"></span>
+
+    <p class="hero__sub" data-reveal data-en="Premium grooming in the old tradition — precision cuts, hot towel shaves and honest craft, delivered by barbers who take their time.">
+      Klasyczna pielęgnacja w starym stylu — precyzyjne strzyżenia, golenie na gorący
+      ręcznik i rzetelne rzemiosło. U nas nikt się nie spieszy.
+    </p>
+
+    <div class="hero__actions" data-reveal>
+      <a href="#appointment" class="btn btn--gold btn--lg" data-en="Book an Appointment">Umów wizytę</a>
+      <a href="#services" class="btn btn--ghost btn--lg" data-en="View Service Menu">Zobacz cennik</a>
+    </div>
+
+  </div>
+
+  <a href="#about" class="hero__scroll" aria-label="Przewiń" data-en-aria="Scroll to content">
+    <span data-en="Scroll">Przewiń</span>
+    <svg class="ico"><use href="#i-chevron-d"/></svg>
+  </a>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     3 · ABOUT
+     ════════════════════════════════════════════════════════════════ -->
+<section class="about section section--cream" id="about">
+  <div class="shell about__grid">
+
+    <div class="about__media" data-reveal>
+      <div class="frame">
+        <!-- IMAGE PLACEHOLDER -->
+        <img src="images/about_Carlos.jpg" alt="Barber tools placeholder">
+      </div>
+      <span class="frame__badge" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="1"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width=".6" opacity=".6"/>
+          <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round">
+            <path d="M38 62 62 38M62 62 38 38"/>
+            <circle cx="50" cy="50" r="2.4" fill="currentColor" stroke="none"/>
+          </g>
+        </svg>
+      </span>
+    </div>
+
+    <div class="about__body" data-reveal>
+      <p class="kicker" data-en="About the shop">O zakładzie</p>
+      <h2 class="title title--logo">Pana Carlosa<br>Barber Shop</h2>
+      <span class="ornament" aria-hidden="true"></span>
+
+      <!-- EDITABLE PLACEHOLDER TEXT — replace with your own story -->
+      <p class="lede" data-en="Fryzura określa naszą osobowość. — Haircut determines our personality.">
+        Fryzura określa naszą osobowość.
+      </p>
+      <p data-en="Afro Fashion Polska is a young shop in Pasaż Zielińskiego in Wrocław. Behind the chair stands one very experienced barber, cutting since he was ten years old.">
+        Afro Fashion Polska to młody zakład w Pasażu Zielińskiego we Wrocławiu.
+        Za fotelem stoi jeden bardzo doświadczony barber, który strzyże od dziesiątego roku życia.
+      </p>
+      <p data-en="Money is not what matters most here. The client's satisfaction is the priority.">
+        Pieniądze nie są tu najważniejsze. Priorytetem jest zadowolenie klienta.
+      </p>
+
+      <ul class="about__list">
+        <li><span>01</span> <b data-en="Parking">Parking</b></li>
+        <li><span>02</span> <b data-en="Wi-Fi">Internet (Wi-Fi)</b></li>
+        <li><span>03</span> <b data-en="Card payments">Płatność kartą</b></li>
+        <li><span>04</span> <b data-en="Child friendly">Przyjazny dzieciom</b></li>
+      </ul>
+
+      <div class="about__foot">
+        <a href="#appointment" class="btn btn--dark" data-en="Book an Appointment">Umów wizytę</a>
+        <p class="signature" data-en="— Pan Carlos, Owner">— Pan Carlos, właściciel</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     4 · SERVICE MENU
+     ─────────────────────────────────────────────────────────────────
+     TO EDIT A SERVICE: change the text inside .svc__name,
+     .svc__price and .svc__desc. To add one, copy a whole <li>.
+     Prices carried over from the brief — confirm the real złoty rates.
+     ════════════════════════════════════════════════════════════════ -->
+<section class="services section section--dark" id="services">
+  <div class="bg-media" aria-hidden="true">
+    <!-- IMAGE PLACEHOLDER -->
+    <img src="images/services-bg.svg" alt="">
+    <span class="bg-media__scrim"></span>
+  </div>
+
+  <span class="oframe oframe--inset" aria-hidden="true">
+    <i class="oframe__c oframe__c--tl"><svg><use href="#i-corner"/></svg></i>
+    <i class="oframe__c oframe__c--tr"><svg><use href="#i-corner"/></svg></i>
+    <i class="oframe__c oframe__c--bl"><svg><use href="#i-corner"/></svg></i>
+    <i class="oframe__c oframe__c--br"><svg><use href="#i-corner"/></svg></i>
+  </span>
+
+  <div class="shell">
+    <header class="section-head" data-reveal>
+      <p class="kicker" data-en="What we do">Co robimy</p>
+      <h2 class="title" data-en="Service Menu">Cennik usług</h2>
+      <span class="ornament ornament--light" aria-hidden="true"></span>
+      <p class="section-head__sub" data-en="Prices and durations as listed on Booksy.">
+        Ceny i czas trwania zgodne z cennikiem na Booksy.
+      </p>
+    </header>
+
+    <div class="svc__grid">
+
+      <!-- ── CARD 1 ─────────────────────────────── -->
+      <article class="svc" data-reveal>
+        <span class="svc__icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="19" cy="49" r="7.5"/><circle cx="45" cy="49" r="7.5"/>
+            <path d="M24.5 43.5 47.5 11"/><path d="M39.5 43.5 16.5 11"/>
+            <path d="M47.5 11l2.5-4M16.5 11 14 7"/>
+            <circle cx="32" cy="32.5" r="2.4" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <h3 class="svc__title" data-en="Haircuts">Strzyżenie</h3>
+        <span class="svc__rule" aria-hidden="true"></span>
+
+        <ul class="svc__list">
+          <li>
+            <p class="svc__row"><span class="svc__name" data-en="Haircut Top">Strzyżenie włosów</span><i class="svc__dots"></i><span class="svc__price">80 zł</span></p>
+            <p class="svc__desc"><span data-en="Classic men's haircut">Klasyczne strzyżenie męskie</span><span class="svc__time">30 min</span></p>
+          </li>
+          <li>
+            <p class="svc__row"><span class="svc__name" data-en="Haircut — first visit">Strzyżenie — 1. wizyta</span><i class="svc__dots"></i><span class="svc__price">100 zł</span></p>
+            <p class="svc__desc"><span data-en="First visit; 80 zł every time after">Pierwsza wizyta, kolejne po 80 zł</span><span class="svc__time">30 min</span></p>
+          </li>
+          <li>
+            <p class="svc__row"><span class="svc__name" data-en="Kids Haircut">Strzyżenie dziecka</span><i class="svc__dots"></i><span class="svc__price">70 zł</span></p>
+            <p class="svc__desc"><span data-en="Haircut for children">Strzyżenie dla dzieci</span><span class="svc__time">35 min</span></p>
+          </li>
+        </ul>
+      </article>
+
+      <!-- ── CARD 2 ─────────────────────────────── -->
+      <article class="svc" data-reveal>
+        <span class="svc__icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+            <path d="M17 25c0-11.5 6.5-20 15-20s15 8.5 15 20z"/>
+            <rect x="18" y="25" width="28" height="7.5" rx="1.5"/>
+            <path d="M21.5 32.5c-1.2 9.5 0 17 3.2 22.5a4 4 0 0 0 3.4 2h7.8a4 4 0 0 0 3.4-2c3.2-5.5 4.4-13 3.2-22.5z"/>
+            <path d="M25 14c1-4.5 3.5-7.5 7-8.5" stroke-linecap="round" opacity=".65"/>
+            <path d="M28 45h8" stroke-linecap="round" opacity=".65"/>
+          </svg>
+        </span>
+        <h3 class="svc__title">Combo</h3>
+        <span class="svc__rule" aria-hidden="true"></span>
+
+        <ul class="svc__list">
+          <li>
+            <p class="svc__row"><span class="svc__name" data-en="Combo — haircut + beard">Combo — strzyżenie + broda</span><i class="svc__dots"></i><span class="svc__price">100 zł</span></p>
+            <p class="svc__desc"><span data-en="Regular client price">Cena dla stałego klienta</span><span class="svc__time">40 min</span></p>
+          </li>
+          <li>
+            <p class="svc__row"><span class="svc__name" data-en="Combo — first visit">Combo — 1. wizyta</span><i class="svc__dots"></i><span class="svc__price">130 zł</span></p>
+            <p class="svc__desc"><span data-en="First visit; 100 zł every time after">Pierwsza wizyta, kolejne po 100 zł</span><span class="svc__time">40 min</span></p>
+          </li>
+        </ul>
+      </article>
+
+      <!-- ── CARD 3 ─────────────────────────────── -->
+      <article class="svc" data-reveal>
+        <span class="svc__icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+            <path d="M27 8h10v7h-10z"/>
+            <path d="M25.5 15h13c1 0 1.8.7 2 1.7l3 8.3v27a4 4 0 0 1-4 4H24.5a4 4 0 0 1-4-4V25l3-8.3c.2-1 1-1.7 2-1.7z"/>
+            <path d="M20.5 32h23"/><path d="M20.5 44h23"/>
+            <path d="M27 37.5h10" stroke-linecap="round" opacity=".75"/>
+          </svg>
+        </span>
+        <h3 class="svc__title" data-en="Beard &amp; Extras">Broda i dodatki</h3>
+        <span class="svc__rule" aria-hidden="true"></span>
+
+        <ul class="svc__list">
+          <li>
+            <p class="svc__row"><span class="svc__name" data-en="Beard Trim">Strzyżenie brody</span><i class="svc__dots"></i><span class="svc__price">40 zł</span></p>
+            <p class="svc__desc"><span data-en="Shaping and beard trim">Wyrównanie i modelowanie brody</span><span class="svc__time">15 min</span></p>
+          </li>
+          <li>
+            <p class="svc__row"><span class="svc__name" data-en="Grey coverage">Odsiwianie</span><i class="svc__dots"></i><span class="svc__price">25 zł</span></p>
+            <p class="svc__desc"><span data-en="Natural grey hair coverage">Naturalne krycie siwych włosów</span><span class="svc__time">15 min</span></p>
+          </li>
+        </ul>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     5 · BARBERS
+     ════════════════════════════════════════════════════════════════ -->
+<section class="barbers section section--cream" id="barbers">
+  <div class="shell">
+    <header class="section-head" data-reveal>
+      <p class="kicker" data-en="The barber">Barber</p>
+      <h2 class="title" data-en="Meet Pan Carlos">Poznaj Pana Carlosa</h2>
+      <span class="ornament" aria-hidden="true"></span>
+    </header>
+
+    <div class="master__grid">
+
+      <div class="master__body" data-reveal>
+        <h3 class="master__name">Pan Carlos</h3>
+        <p class="master__role" data-en="Owner &amp; barber">Właściciel i barber</p>
+
+        <div class="rating" aria-label="4,9 / 5">
+          <span class="rating__stars" aria-hidden="true">
+            <svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg>
+          </span>
+          <strong>4,9</strong>
+          <span class="rating__count" data-en="332 reviews on Booksy">332 opinie na Booksy</span>
+        </div>
+
+        <p class="master__bio" data-en="Cutting hair since he was ten. Barbering is his passion — and the reason clients keep coming back.">
+          Strzyże od dziesiątego roku życia. Barbering to jego pasja — i powód,
+          dla którego klienci wracają.
+        </p>
+
+        <ul class="master__facts">
+          <li><span>01</span> <b data-en="Over 330 rated visits">Ponad 330 ocenionych wizyt</b></li>
+          <li><span>02</span> <b data-en="Card payments accepted">Płatność kartą</b></li>
+          <li><span>03</span> <b data-en="Parking &amp; Wi-Fi">Parking i Wi-Fi</b></li>
+          <li><span>04</span> <b data-en="Child friendly">Przyjazny dzieciom</b></li>
+        </ul>
+
+        <a href="#appointment" class="btn btn--dark" data-en="Book an Appointment">Umów wizytę</a>
+      </div>
+
+      <div class="master__media" data-reveal>
+        <div class="frame frame--tall">
+          <!-- IMAGE PLACEHOLDER -->
+          <img src="images/carlos.jpg" alt="Pan Carlos">
+        </div>
+        <span class="frame__badge" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="1"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width=".6" opacity=".6"/>
+            <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round">
+              <path d="M38 62 62 38M62 62 38 38"/>
+              <circle cx="50" cy="50" r="2.4" fill="currentColor" stroke="none"/>
+            </g>
+          </svg>
+        </span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     6 · APPOINTMENT
+     ════════════════════════════════════════════════════════════════ -->
+<section class="appt section section--cream2" id="appointment">
+  <div class="shell appt__grid">
+
+    <div class="appt__body" data-reveal>
+      <p class="kicker" data-en="Reservations">Rezerwacje</p>
+      <h2 class="title" data-en="Make an Appointment">Umów wizytę</h2>
+      <span class="ornament" aria-hidden="true"></span>
+      <p class="appt__note" data-en="Pick a day and a time below and send the request — we confirm your slot by phone.">
+        Wybierz dzień i godzinę poniżej i wyślij zgłoszenie — potwierdzimy
+        termin telefonicznie.
+      </p>
+
+      <form class="form" id="bookingForm" novalidate>
+        <div class="form__row">
+          <div class="field">
+            <label for="f-name" data-en="Name">Imię i nazwisko</label>
+            <input id="f-name" name="name" type="text" placeholder="Jan Kowalski"
+                   data-en-placeholder="Your full name" required autocomplete="name">
+            <small class="field__err" data-err></small>
+          </div>
+          <div class="field">
+            <label for="f-phone" data-en="Phone Number">Numer telefonu</label>
+            <input id="f-phone" name="phone" type="tel" placeholder="+48 XXX XXX XXX" required autocomplete="tel">
+            <small class="field__err" data-err></small>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="field">
+            <label for="f-email" data-en="Email Address (optional)">Adres e-mail (opcjonalnie)</label>
+            <input id="f-email" name="email" type="email" placeholder="jan@example.com"
+                   data-en-placeholder="you@example.com" autocomplete="email">
+            <small class="field__err" data-err></small>
+          </div>
+          <div class="field">
+            <label for="f-service" data-en="Service">Usługa</label>
+            <div class="select">
+              <select id="f-service" name="service" required>
+                <option value="" selected disabled data-en="Choose a service">Wybierz usługę</option>
+                <optgroup label="Strzyżenie" data-en-label="Haircuts">
+                  <option data-min="30" data-en="Haircut — 80 zł">Strzyżenie włosów — 80 zł</option>
+                  <option data-min="30" data-en="Haircut, first visit — 100 zł">Strzyżenie — 1. wizyta — 100 zł</option>
+                  <option data-min="35" data-en="Kids haircut — 70 zł">Strzyżenie dziecka — 70 zł</option>
+                </optgroup>
+                <optgroup label="Combo" data-en-label="Combo">
+                  <option data-min="40" data-en="Combo, haircut + beard — 100 zł">Combo — strzyżenie + broda — 100 zł</option>
+                  <option data-min="40" data-en="Combo, first visit — 130 zł">Combo — 1. wizyta — 130 zł</option>
+                </optgroup>
+                <optgroup label="Broda i dodatki" data-en-label="Beard &amp; extras">
+                  <option data-min="15" data-en="Beard trim — 40 zł">Strzyżenie brody — 40 zł</option>
+                  <option data-min="15" data-en="Grey coverage — 25 zł">Odsiwianie — 25 zł</option>
+                </optgroup>
+              </select>
+              <svg class="ico select__chev"><use href="#i-chevron-d"/></svg>
+            </div>
+            <small class="field__err" data-err></small>
+          </div>
+        </div>
+
+        <div class="field field--picker">
+          <label data-en="Date &amp; time">Data i godzina</label>
+
+          <div class="picker" id="picker">
+            <div class="picker__cal">
+              <div class="picker__head">
+                <button type="button" class="picker__nav" id="calPrev" aria-label="Poprzedni miesiąc" data-en-aria="Previous month"><svg class="ico"><use href="#i-arrow-l"/></svg></button>
+                <p class="picker__month" id="calMonth" aria-live="polite"></p>
+                <button type="button" class="picker__nav" id="calNext" aria-label="Następny miesiąc" data-en-aria="Next month"><svg class="ico"><use href="#i-arrow-r"/></svg></button>
+              </div>
+              <div class="picker__weekdays" id="calWeekdays" aria-hidden="true"></div>
+              <div class="picker__days" id="calDays" role="grid"></div>
+            </div>
+
+            <div class="picker__times">
+              <p class="picker__times-h" data-en="Time">Godzina</p>
+              <div class="picker__slots" id="calSlots" role="listbox"></div>
+            </div>
+          </div>
+
+          <p class="picker__summary" id="calSummary" aria-live="polite"></p>
+
+          <input type="hidden" id="f-date" name="date" required>
+          <input type="hidden" id="f-time" name="time" required>
+          <small class="field__err" data-err></small>
+        </div>
+
+        <div class="field">
+          <label for="f-msg" data-en="Message">Wiadomość</label>
+          <textarea id="f-msg" name="message" rows="4" placeholder="Coś, o czym powinniśmy wiedzieć przed wizytą?"
+                    data-en-placeholder="Anything we should know before your visit?"></textarea>
+        </div>
+
+        <div class="hp" aria-hidden="true"><label>Nie wypełniaj<input type="text" name="company" tabindex="-1" autocomplete="off"></label></div>
+
+        <button type="submit" class="btn btn--gold btn--block btn--lg" data-en="Book Appointment">Umów wizytę</button>
+        <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
+
+        <!-- data-en must sit on the text node only: the switcher writes
+             textContent, which would wipe out the link inside. -->
+        <p class="appt__alt">
+          <span data-en="Prefer to book yourself? We are also on">Wolisz zarezerwować sam? Jesteśmy też na</span>
+          <a href="https://booksy.com/pl-pl/185319_pana-carlosa_barber-shop_13750_wroclaw" target="_blank" rel="noopener">Booksy</a>.
+        </p>
+      </form>
+    </div>
+
+    <div class="appt__media" data-reveal>
+      <div class="frame frame--tall">
+        <!-- IMAGE PLACEHOLDER -->
+        <img src="images/main.jpeg" alt="Vintage barber chair placeholder">
+      </div>
+      <p class="vtext" aria-hidden="true" data-en="CALL US: +48 XXX XXX XXX">ZADZWOŃ: +48 XXX XXX XXX</p>
+      <a class="vtext-mobile" href="tel:+48XXXXXXXXX" data-en="CALL US: +48 XXX XXX XXX">ZADZWOŃ: +48 XXX XXX XXX</a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     7 · TESTIMONIALS
+     ════════════════════════════════════════════════════════════════ -->
+<section class="tst section section--light" id="testimonials">
+  <div class="shell">
+    <header class="section-head" data-reveal>
+      <p class="kicker" data-en="Reviews">Opinie</p>
+      <h2 class="title" data-en="What Our Clients Say">Co mówią klienci</h2>
+      <span class="ornament" aria-hidden="true"></span>
+      <p class="section-head__sub" data-en="4.9 out of 5 from 332 reviews on Booksy.">
+        4,9 na 5 z 332 opinii na Booksy.
+      </p>
+    </header>
+
+    <div class="tst__slider" data-reveal>
+      <div class="tst__viewport" id="tstViewport">
+        <div class="tst__track" id="tstTrack">
+
+          <!-- ── TESTIMONIAL (copy to add more) ── -->
+          <article class="tst__slide">
+            <div class="tst__card">
+              <svg class="tst__quote" aria-hidden="true"><use href="#i-quote"/></svg>
+              <div class="tst__stars" aria-label="5/5">
+                <svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg>
+              </div>
+              <blockquote>I call him the doctor of hair</blockquote>
+              <footer class="tst__who">
+                <span class="tst__avatar" aria-hidden="true">AF</span>
+                <span><strong>Afro Fashion</strong><em data-en="Haircut · Booksy">Strzyżenie włosów · Booksy</em></span>
+              </footer>
+            </div>
+          </article>
+
+          <article class="tst__slide">
+            <div class="tst__card">
+              <svg class="tst__quote" aria-hidden="true"><use href="#i-quote"/></svg>
+              <div class="tst__stars" aria-label="5/5">
+                <svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg>
+              </div>
+              <blockquote>He’s a smart, expert, diligent with a gentle touch on handling haircut. I will choose him over and over again.</blockquote>
+              <footer class="tst__who">
+                <span class="tst__avatar" aria-hidden="true">EL</span>
+                <span><strong>Elmubahrock</strong><em data-en="Kids haircut · Booksy">Strzyżenie dziecka · Booksy</em></span>
+              </footer>
+            </div>
+          </article>
+
+          <article class="tst__slide">
+            <div class="tst__card">
+              <svg class="tst__quote" aria-hidden="true"><use href="#i-quote"/></svg>
+              <div class="tst__stars" aria-label="5/5">
+                <svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg><svg class="ico"><use href="#i-star"/></svg>
+              </div>
+              <blockquote>Very good haircut, professional and great service</blockquote>
+              <footer class="tst__who">
+                <span class="tst__avatar" aria-hidden="true">ŁU</span>
+                <span><strong>Łukasz</strong><em data-en="Combo, first visit · Booksy">Combo — 1. wizyta · Booksy</em></span>
+              </footer>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <div class="tst__controls">
+        <button class="sq-btn" id="tstPrev" aria-label="Poprzednia opinia" data-en-aria="Previous review"><svg class="ico"><use href="#i-arrow-l"/></svg></button>
+        <div class="tst__dots" id="tstDots"></div>
+        <button class="sq-btn" id="tstNext" aria-label="Następna opinia" data-en-aria="Next review"><svg class="ico"><use href="#i-arrow-r"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     8 · WORKING HOURS
+     ════════════════════════════════════════════════════════════════ -->
+<section class="hours section section--dark" id="hours">
+  <div class="bg-media" aria-hidden="true">
+    <!-- IMAGE PLACEHOLDER -->
+    <img src="images/hours-bg.svg" alt="">
+    <span class="bg-media__scrim"></span>
+  </div>
+
+  <span class="oframe oframe--inset" aria-hidden="true">
+    <i class="oframe__c oframe__c--tl"><svg><use href="#i-corner"/></svg></i>
+    <i class="oframe__c oframe__c--tr"><svg><use href="#i-corner"/></svg></i>
+    <i class="oframe__c oframe__c--bl"><svg><use href="#i-corner"/></svg></i>
+    <i class="oframe__c oframe__c--br"><svg><use href="#i-corner"/></svg></i>
+  </span>
+
+  <!-- poster-style line art -->
+  <span class="artline artline--clipper" aria-hidden="true"><svg><use href="#i-clipper"/></svg></span>
+  <span class="artline artline--comb" aria-hidden="true"><svg><use href="#i-comb"/></svg></span>
+
+  <div class="shell">
+    <header class="section-head" data-reveal>
+      <p class="kicker" data-en="Come see us">Zapraszamy</p>
+      <h2 class="title" data-en="Working Hours">Godziny otwarcia</h2>
+      <span class="ornament ornament--light" aria-hidden="true"></span>
+    </header>
+
+    <div class="hours__grid" data-reveal>
+      <div class="hours__box">
+        <p class="hours__day" data-en="Monday – Friday">Poniedziałek – Piątek</p>
+        <span class="hours__rule" aria-hidden="true"></span>
+        <p class="hours__time">10:00 – 21:00</p>
+      </div>
+      <div class="hours__box">
+        <p class="hours__day" data-en="Saturday">Sobota</p>
+        <span class="hours__rule" aria-hidden="true"></span>
+        <p class="hours__time">10:00 – 20:00</p>
+      </div>
+      <div class="hours__box hours__box--closed">
+        <p class="hours__day" data-en="Sunday">Niedziela</p>
+        <span class="hours__rule" aria-hidden="true"></span>
+        <p class="hours__time" data-en="Closed">Nieczynne</p>
+      </div>
+    </div>
+
+    <p class="hours__promo" data-reveal data-en="Bring a friend — you both get 20 zł off your next combo!">
+      Przyprowadź znajomego — oboje dostaniecie 20 zł zniżki na kolejne combo!
+    </p>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     9 · PROMOTION BANNER
+     ════════════════════════════════════════════════════════════════ -->
+<section class="promo" aria-label="Promocja">
+  <div class="shell promo__inner">
+
+    <span class="promo__rays promo__rays--l" aria-hidden="true"><svg><use href="#i-rays"/></svg></span>
+
+    <p class="promo__text">
+      <span class="promo__script" data-en="Promotion">Promocja</span>
+      <span class="promo__main" data-en="Bring a friend — 20 zł off for both of you">Przyprowadź znajomego — 20 zł taniej dla obojga</span>
+    </p>
+
+    <span class="promo__rays promo__rays--r" aria-hidden="true"><svg><use href="#i-rays"/></svg></span>
+
+    <a href="#appointment" class="btn btn--dark" data-en="Book an Appointment">Umów wizytę</a>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     10 · GALLERY
+     ════════════════════════════════════════════════════════════════ -->
+<section class="gal section section--light" id="gallery">
+  <div class="shell">
+    <header class="section-head" data-reveal>
+      <p class="kicker" data-en="Portfolio">Portfolio</p>
+      <h2 class="title" data-en="Our Work">Nasze realizacje</h2>
+      <span class="ornament" aria-hidden="true"></span>
+      <p class="section-head__sub" data-en="Six editable image placeholders — swap in your own photos.">
+        Sześć miejsc na zdjęcia — podmień na własne.
+      </p>
+    </header>
+
+    <div class="gal__grid" data-reveal>
+      <figure class="gal__item gal__item--a">
+        <img src="images/haircut1.jpeg" alt="Gallery placeholder 1">
+        <figcaption><span data-en="Haircut">Strzyżenie</span><svg class="ico"><use href="#i-plus"/></svg></figcaption>
+      </figure>
+      <figure class="gal__item gal__item--b">
+        <img src="images/haircut2.jpeg" alt="Gallery placeholder 2">
+        <figcaption><span data-en="Haircut">Strzyżenie</span><svg class="ico"><use href="#i-plus"/></svg></figcaption>
+      </figure>
+      <figure class="gal__item gal__item--c">
+        <img src="images/haircut3.jpeg" alt="Gallery placeholder 3">
+        <figcaption><span data-en="Haircut">Strzyżenie</span><svg class="ico"><use href="#i-plus"/></svg></figcaption>
+      </figure>
+      <figure class="gal__item gal__item--d">
+        <img src="images/haircut4.jpeg" alt="Gallery placeholder 4">
+        <figcaption><span data-en="Haircut for kids">Strzyżenie dziecka</span><svg class="ico"><use href="#i-plus"/></svg></figcaption>
+      </figure>
+      <figure class="gal__item gal__item--e">
+        <img src="images/haircut5.jpeg" alt="Gallery placeholder 5">
+        <figcaption><span data-en="Combo — haircut + beard">Combo — strzyżenie + broda</span><svg class="ico"><use href="#i-plus"/></svg></figcaption>
+      </figure>
+      <figure class="gal__item gal__item--f">
+        <img src="images/haircut6.jpeg" alt="Gallery placeholder 6">
+        <figcaption><span data-en="Combo — haircut + beard">Combo — strzyżenie + broda</span><svg class="ico"><use href="#i-plus"/></svg></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+</main>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     11 · FOOTER
+     ════════════════════════════════════════════════════════════════ -->
+<footer class="foot" id="contact">
+  <div class="shell foot__grid">
+
+    <div class="foot__col foot__col--brand">
+
+      <div class="signplate" role="img" aria-label="Pana Carlosa Barber Shop">
+        <span class="signplate__l1">Pana Carlosa</span>
+        <span class="signplate__rule" aria-hidden="true"></span>
+        <span class="signplate__l2">Barber Shop</span>
+      </div>
+
+      <p class="foot__blurb" data-en="Traditional barbering in Pasaż Zielińskiego, Wrocław. 4.9 out of 5 from 332 reviews.">
+        Tradycyjny barbering w Pasażu Zielińskiego we Wrocławiu. 4,9 na 5 z 332 opinii.
+      </p>
+      <div class="foot__social">
+        <a href="https://www.instagram.com/afrofashionpolska/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ico"><use href="#i-ig"/></svg></a>
+        <a href="https://www.facebook.com/carlosblondo.tessa.5" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ico"><use href="#i-fb"/></svg></a>
+      </div>
+    </div>
+
+    <div class="foot__col">
+      <h3 class="foot__h" data-en="Contact">Kontakt</h3>
+      <ul class="foot__list">
+        <li><svg class="ico"><use href="#i-pin"/></svg><span class="foot__addr">
+          <span>Pasaż Zielińskiego, Aleja Niebieska</span>
+          <span data-en="Stand 11.11 · 50-088 Wrocław, Krzyki">Stoisko 11.11 · 50-088 Wrocław, Krzyki</span>
+        </span></li>
+        <li><svg class="ico"><use href="#i-phone"/></svg><a href="tel:+48XXXXXXXXX">+48 XXX XXX XXX</a></li>
+        <li><svg class="ico"><use href="#i-mail"/></svg><a href="mailto:kontakt@example.com">kontakt@example.com</a></li>
+      </ul>
+    </div>
+
+    <div class="foot__col">
+      <h3 class="foot__h" data-en="Working Hours">Godziny otwarcia</h3>
+      <ul class="foot__hours">
+        <li><span data-en="Mon – Fri">Pon – Pt</span><b>10:00 – 21:00</b></li>
+        <li><span data-en="Saturday">Sobota</span><b>10:00 – 20:00</b></li>
+        <li><span data-en="Sunday">Niedziela</span><b class="is-closed" data-en="Closed">Nieczynne</b></li>
+      </ul>
+    </div>
+
+    <div class="foot__col">
+      <h3 class="foot__h" data-en="Explore">Nawigacja</h3>
+      <ul class="foot__links">
+        <li><a href="#home" data-en="Home">Start</a></li>
+        <li><a href="#about" data-en="About">O nas</a></li>
+        <li><a href="#services" data-en="Services">Usługi</a></li>
+        <li><a href="#gallery" data-en="Gallery">Galeria</a></li>
+        <li><a href="#barbers" data-en="Barber">Barber</a></li>
+        <li><a href="#appointment" data-en="Book Appointment">Umów wizytę</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="foot__bar">
+    <div class="shell foot__bar-inner">
+      <p>© <span id="year">2026</span> Pana Carlosa Barber Shop. <span data-en="All rights reserved.">Wszelkie prawa zastrzeżone.</span></p>
+      <p class="foot__credit">Afro fashion Polska sp. z o.o.</p>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Do góry" data-en-aria="Back to top">
+  <svg class="ico"><use href="#i-chevron-d"/></svg>
+</button>
+
+<!-- gallery lightbox -->
+<div class="lb" id="lightbox" role="dialog" aria-modal="true" aria-label="Galeria" hidden>
+  <button class="lb__close" id="lbClose" aria-label="Zamknij" data-en-aria="Close"><svg class="ico"><use href="#i-close"/></svg></button>
+  <button class="lb__nav lb__nav--prev" id="lbPrev" aria-label="Poprzednie" data-en-aria="Previous image"><svg class="ico"><use href="#i-arrow-l"/></svg></button>
+  <figure class="lb__figure">
+    <img id="lbImg" src="" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+  <button class="lb__nav lb__nav--next" id="lbNext" aria-label="Następne" data-en-aria="Next image"><svg class="ico"><use href="#i-arrow-r"/></svg></button>
+</div>
+
+<script src="/config.js"></script>
+<script src="script.js" defer></script>
+</body>
+</html>
