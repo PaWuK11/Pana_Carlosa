@@ -807,7 +807,10 @@
   <button class="lb__nav lb__nav--next" id="lbNext" aria-label="Następne" data-en-aria="Next image"><svg class="ico"><use href="#i-arrow-r"/></svg></button>
 </div>
 
-<script src="/config.js"></script>
+<!-- Optional local-dev override: server.js serves this from .env. It does not
+     exist on Netlify, so it is loaded defensively — script.js falls back to the
+     relative /booking endpoint, which works in both places. -->
+<script src="/config.js" onerror="/* no local .env config — use the default endpoint */"></script>
 <script src="script.js" defer></script>
 </body>
 </html>

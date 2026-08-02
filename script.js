@@ -605,10 +605,12 @@
      The bot token must NEVER live in this file — anyone can read it.
      Point BOOKING_ENDPOINT at the proxy in telegram-proxy/worker.js,
      which keeps the token server-side. See README §9.                */
-  /* Local dev: server.js serves /config.js from .env. Production: set the Worker URL here. */
+  /* Relative on purpose, so the same build works in both places:
+       local  → server.js handles POST /booking using .env
+       Netlify → netlify.toml redirects /booking to the function
+     window.__ENV__ still wins if something injects it (see server.js). */
   var BOOKING_ENDPOINT =
-    (window.__ENV__ && window.__ENV__.BOOKING_ENDPOINT) ||
-    '';   /* e.g. 'https://pana-carlosa.<you>.workers.dev' */
+    (window.__ENV__ && window.__ENV__.BOOKING_ENDPOINT) || '/booking';
 
   (function booking() {
     var form = $('#bookingForm');

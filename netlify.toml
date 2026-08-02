@@ -1,0 +1,49 @@
+# Netlify build config.
+#
+# The site is plain static files at the repo root — there is nothing to build.
+# The only server-side piece is netlify/functions/booking.js, which forwards
+# the booking form to Telegram using BOT_TOKEN / CHAT_ID from the site's
+# environment variables (Site configuration → Environment variables).
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  command = ""
+
+[build.environment]
+  # booking-message.cjs calls global fetch(), which only exists on Node 18+.
+  NODE_VERSION = "20"
+
+# Friendlier endpoint than /.netlify/functions/booking
+[[redirects]]
+  from = "/booking"
+  to = "/.netlify/functions/booking"
+  status = 200
+
+# publish = "." puts the whole repo on the CDN, so the server-side and tooling
+# files would otherwise be downloadable at their paths. None of them contain
+# secrets (.env is gitignored), but they are not part of the site — hide them.
+[[redirects]]
+  from = "/server.js"
+  to = "/index.html"
+  status = 404
+
+[[redirects]]
+  from = "/booking-message.cjs"
+  to = "/index.html"
+  status = 404
+
+[[redirects]]
+  from = "/.env.example"
+  to = "/index.html"
+  status = 404
+
+[[redirects]]
+  from = "/scripts/*"
+  to = "/index.html"
+  status = 404
+
+[[redirects]]
+  from = "/telegram-proxy/*"
+  to = "/index.html"
+  status = 404

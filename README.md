@@ -162,44 +162,54 @@ write into Booksy's calendar — see §5b for why that is not possible.
 
 Required fields: **name, phone, service, date, time**. Email and message are optional.
 
-### Why a proxy is needed
+### How it is wired (Netlify)
 
-A Telegram bot token is a password. Anything in `script.js` is readable by every
-visitor, so putting the token there means losing the bot. `telegram-proxy/worker.js`
-keeps it server-side.
+The site is deployed on Netlify as static files, so there is no `server.js` in
+production. The form posts to the **relative** path `/booking`, which resolves in
+both places:
+
+| Where | `/booking` is handled by |
+|---|---|
+| local | `server.js`, using `BOT_TOKEN` / `CHAT_ID` from `.env` |
+| Netlify | `netlify/functions/booking.js`, via the redirect in `netlify.toml` |
+
+Because the path is relative there is no CORS to configure and nothing to change
+between environments.
+
+**Set the secrets in Netlify** — Site configuration → Environment variables:
+
+```
+BOT_TOKEN   from @BotFather
+CHAT_ID     numeric id from @userinfobot, or a group id like -100123…
+```
+
+Then **trigger a redeploy** — functions only read environment variables at deploy
+time, so adding them without redeploying leaves the form broken.
+
+Without them the function returns `500 {"error":"Not configured"}` and logs the
+reason; the page shows "Nie udało się wysłać".
+
+A Telegram bot token is a password. Nothing in `index.html` / `script.js` is
+private, which is why the token only ever lives in Netlify's environment (or in
+gitignored `.env` locally) and never in the client bundle.
+
+### Checking it on production
+
+Netlify → your site → **Functions → booking** shows every invocation and its logs.
+A quick smoke test from your machine:
 
 ```bash
-npm i -g wrangler
-wrangler login
-cd telegram-proxy
-wrangler deploy
-wrangler secret put BOT_TOKEN    # from @BotFather
-wrangler secret put CHAT_ID      # from @userinfobot, or a group id
+curl -i -X POST https://<your-site>.netlify.app/booking \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Test","phone":"+48 500 100 200","service":"Combo","date":"2026-08-10","time":"15:00"}'
 ```
 
-Then paste the printed URL into `script.js`:
+`200 {"ok":true}` means the message reached Telegram.
 
-```js
-var BOOKING_ENDPOINT = 'https://pana-carlosa.<you>.workers.dev';
-```
+### The Cloudflare Worker
 
-While it is empty the form says so plainly instead of faking a success message.
-
-Finally set `ALLOWED_ORIGIN` in `telegram-proxy/wrangler.toml` to your real domain —
-`"*"` lets any website post through your bot.
-
-### Testing locally
-
-`server.js` serves `POST /booking` (and `/mock-booking` as an alias). Copy
-`.env.example` to `.env`, fill in `BOT_TOKEN` and `CHAT_ID`, and it sends real
-Telegram messages from your machine. With the token left blank it just logs the
-payload instead.
-
-The browser picks the endpoint up automatically: `server.js` publishes `.env` as
-`/config.js`, and `script.js` reads `window.__ENV__.BOOKING_ENDPOINT`. Nothing to
-edit by hand for local work.
-
-`.env` is gitignored — keep it that way.
+`telegram-proxy/` does the same job and is kept as an alternative if the site ever
+moves off Netlify. It is not used by the current deploy.
 
 ---
 
