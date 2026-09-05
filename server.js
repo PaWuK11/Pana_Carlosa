@@ -6,9 +6,13 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const {
+  REQUIRED,
   buildBookingMessage,
-  sendBookingToTelegram
+  sendBookingToTelegram,
+  handleTelegramUpdate,
+  tgApi
 } = require('./booking-message.cjs');
+const { mailReady } = require('./booking-email.cjs');
 
 const ROOT = __dirname;
 
@@ -100,8 +104,7 @@ async function handleBooking(req, res) {
   const chatId = process.env.CHAT_ID;
 
   if (!token || !chatId) {
-    const missing = ['name', 'phone', 'service', 'date', 'time']
-      .filter((k) => !String(body[k] || '').trim());
+    const missing = REQUIRED.filter((k) => !String(body[k] || '').trim());
     if (missing.length) {
       res.writeHead(400, { 'Content-Type': 'application/json', ...corsHeaders() })
         .end(JSON.stringify({ error: 'Missing fields', missing }));
@@ -133,6 +136,100 @@ async function handleBooking(req, res) {
     .end(JSON.stringify({ ok: true }));
 }
 
+async function handleLocalWebhook(req, res) {
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, corsHeaders()).end();
+    return;
+  }
+  if (req.method !== 'POST') {
+    res.writeHead(405, { 'Content-Type': 'application/json', ...corsHeaders() })
+      .end(JSON.stringify({ error: 'Method not allowed' }));
+    return;
+  }
+
+  const token = process.env.BOT_TOKEN;
+  const chatId = process.env.CHAT_ID;
+  if (!token || !chatId) {
+    res.writeHead(500, { 'Content-Type': 'application/json', ...corsHeaders() })
+      .end(JSON.stringify({ error: 'Not configured' }));
+    return;
+  }
+
+  let update;
+  try {
+    update = JSON.parse(await readBody(req));
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'application/json', ...corsHeaders() })
+      .end(JSON.stringify({ error: 'Invalid JSON' }));
+    return;
+  }
+
+  try {
+    await handleTelegramUpdate(update, { token, chatId, env: process.env });
+  } catch (err) {
+    console.error('[telegram-webhook]', err);
+  }
+  res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders() })
+    .end(JSON.stringify({ ok: true }));
+}
+
+function startTelegramPolling() {
+  const token = process.env.BOT_TOKEN;
+  const chatId = process.env.CHAT_ID;
+  if (!token || !chatId) return;
+
+  let offset = 0;
+  let warned409 = false;
+
+  async function takeOverWebhook() {
+    if (process.env.TELEGRAM_POLL !== '1') return;
+    const result = await tgApi(token, 'deleteWebhook', { drop_pending_updates: false });
+    if (result.ok) {
+      console.log('Telegram polling on (deleted production webhook). Re-run scripts/set-telegram-webhook.js after testing.');
+    }
+  }
+
+  async function poll() {
+    try {
+      const result = await tgApi(token, 'getUpdates', {
+        offset,
+        timeout: 25,
+        allowed_updates: ['callback_query']
+      });
+      if (!result.ok) {
+        const desc = (result.data && result.data.description) || '';
+        if (/conflict|webhook/i.test(desc)) {
+          if (!warned409) {
+            warned409 = true;
+            console.log('Telegram webhook is set on production — local buttons are handled there.');
+            console.log('To test decisions locally: TELEGRAM_POLL=1 node server.js');
+          }
+          setTimeout(poll, 30000);
+          return;
+        }
+        console.error('[telegram-poll]', result.status, desc);
+        setTimeout(poll, 5000);
+        return;
+      }
+      const updates = (result.data && result.data.result) || [];
+      for (const update of updates) {
+        offset = update.update_id + 1;
+        if (!update.callback_query) continue;
+        try {
+          await handleTelegramUpdate(update, { token, chatId, env: process.env });
+        } catch (err) {
+          console.error('[telegram-poll] decision failed:', err);
+        }
+      }
+    } catch (err) {
+      console.error('[telegram-poll]', err.message || err);
+    }
+    setTimeout(poll, 400);
+  }
+
+  takeOverWebhook().finally(poll);
+}
+
 http.createServer((req, res) => {
   const url = decodeURIComponent(req.url.split('?')[0]);
 
@@ -147,6 +244,11 @@ http.createServer((req, res) => {
 
   if (url === '/booking' || url === '/mock-booking') {
     handleBooking(req, res);
+    return;
+  }
+
+  if (url === '/telegram-webhook') {
+    handleLocalWebhook(req, res);
     return;
   }
 
@@ -173,6 +275,12 @@ http.createServer((req, res) => {
   console.log(`Pan Carlos → http://localhost:${PORT}`);
   if (process.env.BOT_TOKEN && process.env.CHAT_ID) {
     console.log('Booking → Telegram (BOT_TOKEN + CHAT_ID from .env)');
+    if (mailReady(process.env)) {
+      console.log('Decisions → client e-mail (MAIL_FROM + mail API key)');
+    } else {
+      console.log('Decisions → Telegram only (add MAIL_FROM + RESEND_API_KEY or BREVO_API_KEY)');
+    }
+    startTelegramPolling();
   } else {
     console.log('Booking → mock only (add BOT_TOKEN + CHAT_ID to .env to send for real)');
   }

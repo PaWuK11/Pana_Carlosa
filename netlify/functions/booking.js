@@ -9,6 +9,8 @@
  * SET THESE IN NETLIFY (Site configuration → Environment variables):
  *   BOT_TOKEN   from @BotFather
  *   CHAT_ID     numeric id from @userinfobot, or a group id like -100123…
+ *   MAIL_FROM / RESEND_API_KEY (or BREVO_API_KEY) — used when Carlos taps
+ *   Confirm / Decline in telegram-webhook.js
  *
  * Redeploy after adding them — functions only pick up env vars at deploy.
  */

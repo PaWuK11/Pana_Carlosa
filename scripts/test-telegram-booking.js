@@ -53,7 +53,8 @@ const CASES = [
       service: SERVICES[0],
       date: '2026-08-15',
       time: '14:30',
-      duration: 30
+      duration: 30,
+      email: 'jan.kowalski@example.com'
     }
   },
   {
@@ -64,7 +65,8 @@ const CASES = [
       service: 'Strzyżenie — 1. wizyta — 100 zł',
       date: '2026-08-20',
       time: '10:00',
-      duration: 30
+      duration: 30,
+      email: 'piotr.nowak@example.com'
     }
   },
   {
@@ -89,6 +91,7 @@ const CASES = [
       date: '2026-08-02',
       time: '12:00',
       duration: 15,
+      email: 'jan.okowalski@example.com',
       message: 'Czy można wcześniej? Dziękuję!'
     }
   }
@@ -99,7 +102,8 @@ function assertHtmlSafe(text) {
   const tags = text.match(/<\/?[a-z][^>]*>/gi) || [];
   const allowed = new Set([
     '<b>', '</b>', '<i>', '</i>', '<strong>', '</strong>',
-    '<em>', '</em>', '<u>', '</u>', '<s>', '</s>', '<code>', '</code>'
+    '<em>', '</em>', '<u>', '</u>', '<s>', '</s>', '<code>', '</code>',
+    '<tg-spoiler>', '</tg-spoiler>'
   ]);
   for (const tag of tags) {
     if (!allowed.has(tag.toLowerCase())) {
@@ -131,7 +135,8 @@ async function main() {
         service,
         date: '2026-08-25',
         time: '11:15',
-        duration
+        duration,
+        email: 'test@example.com'
       }
     });
   }

@@ -17,8 +17,9 @@ Pana Carlosa/
 ├── script.js      ← nav, slider, lightbox, form, animations
 ├── images/        ← photos
 ├── telegram-proxy/ ← Cloudflare Worker that forwards the form to Telegram
-├── booking-message.cjs ← shared Telegram message formatter
-├── scripts/       ← test-telegram-booking.js, sends one message end-to-end
+├── booking-message.cjs ← Telegram message + confirm/reject buttons
+├── booking-email.cjs ← client emails after a decision
+├── scripts/       ← Telegram tests + set-telegram-webhook.js
 ├── server.js      ← local preview server + POST /booking
 └── README.md
 ```
@@ -157,10 +158,11 @@ Other quick knobs:
 ## 5 · Connecting the booking form to Telegram
 
 The form is the main way clients book, so it has to work in production. What it
-sends is a *request*: it lands in Telegram and Carlos confirms by phone. It does not
-write into Booksy's calendar — see §5b for why that is not possible.
+sends is a *request*: it lands in Telegram with **Confirm** / **Decline**
+buttons. Either tap emails the client. It does not write into Booksy's calendar
+— see §5b for why that is not possible.
 
-Required fields: **name, phone, service, date, time**. Email and message are optional.
+Required fields: **name, phone, email, service, date, time**. Message is optional.
 
 ### How it is wired (Netlify)
 
@@ -168,10 +170,12 @@ The site is deployed on Netlify as static files, so there is no `server.js` in
 production. The form posts to the **relative** path `/booking`, which resolves in
 both places:
 
-| Where | `/booking` is handled by |
-|---|---|
-| local | `server.js`, using `BOT_TOKEN` / `CHAT_ID` from `.env` |
-| Netlify | `netlify/functions/booking.js`, via the redirect in `netlify.toml` |
+| Where | Path | Handler |
+|---|---|---|
+| local | `POST /booking` | `server.js` (`.env`) |
+| local | Telegram buttons | `server.js` long-poll (`getUpdates`) |
+| Netlify | `/booking` | `netlify/functions/booking.js` |
+| Netlify | `/telegram-webhook` | `netlify/functions/telegram-webhook.js` |
 
 Because the path is relative there is no CORS to configure and nothing to change
 between environments.
@@ -179,15 +183,26 @@ between environments.
 **Set the secrets in Netlify** — Site configuration → Environment variables:
 
 ```
-BOT_TOKEN   from @BotFather
-CHAT_ID     numeric id from @userinfobot, or a group id like -100123…
+BOT_TOKEN        from @BotFather
+CHAT_ID          numeric id from @userinfobot, or a group id like -100123…
+MAIL_FROM        Pana Carlosa <rezerwacje@your-domain>
+RESEND_API_KEY   from resend.com   (or BREVO_API_KEY from brevo.com)
+SITE_URL         https://your-site.netlify.app
 ```
 
 Then **trigger a redeploy** — functions only read environment variables at deploy
 time, so adding them without redeploying leaves the form broken.
 
-Without them the function returns `500 {"error":"Not configured"}` and logs the
-reason; the page shows "Nie udało się wysłać".
+Point the bot at the decision webhook once the site is live:
+
+```bash
+# SITE_URL and BOT_TOKEN in .env
+node scripts/set-telegram-webhook.js
+```
+
+Without `BOT_TOKEN` / `CHAT_ID` the function returns `500 {"error":"Not configured"}`
+and the page shows "Nie udało się wysłać". Without mail keys, the Telegram buttons
+still work but Carlos sees that the client email did not go out.
 
 A Telegram bot token is a password. Nothing in `index.html` / `script.js` is
 private, which is why the token only ever lives in Netlify's environment (or in
@@ -201,10 +216,11 @@ A quick smoke test from your machine:
 ```bash
 curl -i -X POST https://<your-site>.netlify.app/booking \
   -H 'Content-Type: application/json' \
-  -d '{"name":"Test","phone":"+48 500 100 200","service":"Combo","date":"2026-08-10","time":"15:00"}'
+  -d '{"name":"Test","phone":"+48 500 100 200","email":"test@example.com","service":"Combo","date":"2026-08-10","time":"15:00"}'
 ```
 
-`200 {"ok":true}` means the message reached Telegram.
+`200 {"ok":true}` means the message reached Telegram. Then tap a button in the
+bot — the client address should receive the confirm or decline mail.
 
 ### The Cloudflare Worker
 
@@ -228,8 +244,9 @@ Custom, in `script.js` (section 7). No library.
 
 **It does not know what Booksy has booked.** Booksy publishes no API and a browser
 cannot read it (CORS), so two people *can* request the same slot. Carlos sees both
-requests in Telegram and confirms one. If you ever want real slot-locking, the site
-would have to become the source of truth instead of Booksy.
+requests in Telegram and confirms one (the other client gets the decline email).
+If you ever want real slot-locking, the site would have to become the source of
+truth instead of Booksy.
 
 ---
 
@@ -314,8 +331,8 @@ point those buttons at the Booksy URL again and promote that link to a button.
 
 **What this means in practice.** A submission is a *request*, not a confirmed slot —
 nothing writes into Booksy's calendar (§5b explains why that is not possible). Carlos
-gets the request in Telegram and confirms by phone. Two people can still ask for the
-same time; he sees both and confirms one.
+gets the request in Telegram, taps confirm or reject, and the client is emailed
+either way. Two people can still ask for the same time; he sees both and confirms one.
 
 Because the form is now the main route, it needs to actually work in production:
 deploy the Worker and set `BOOKING_ENDPOINT` (§5) before going live. Until then the

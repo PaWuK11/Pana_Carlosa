@@ -656,6 +656,8 @@ code{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em; 
 }
 .about__list b{ font-weight:400; }
 .foot__addr{ display:flex; flex-direction:column; }
+a.foot__addr{ transition:color .3s var(--ease); }
+a.foot__addr:hover{ color:var(--gold); }
 
 .about__foot{ display:flex; align-items:center; gap:28px; flex-wrap:wrap; }
 .signature{
@@ -915,6 +917,14 @@ code{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em; 
 }
 .field input[type="date"],
 .field input[type="time"]{ min-height:44px; }
+
+.phone{
+  display:grid;
+  grid-template-columns:6.6rem minmax(0,1fr);
+  gap:14px;
+  align-items:end;
+}
+.phone__cc select{ padding-right:22px; }
 
 .select{ position:relative; }
 .select__chev{
@@ -1279,6 +1289,7 @@ code{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em; 
   grid-template-columns:repeat(4,minmax(0,1fr));
   grid-auto-rows:clamp(150px,15vw,215px);
   gap:clamp(12px,1.4vw,18px);
+  /* Default = original 6-tile mosaic */
   grid-template-areas:
     "a a b c"
     "a a b d"
@@ -1291,6 +1302,21 @@ code{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em; 
 .gal__item--e{ grid-area:e; }
 .gal__item--f{ grid-area:f; }
 
+/* Extra Booksy photos stay hidden until "Show all" */
+.gal__grid:not(.is-expanded) .gal__item:nth-child(n+7){ display:none; }
+
+/* Expanded: denser auto grid for the full set */
+.gal__grid.is-expanded{
+  grid-template-areas:none;
+  grid-auto-flow:dense;
+}
+.gal__grid.is-expanded .gal__item--a{ grid-area:auto; grid-column:span 2; grid-row:span 2; }
+.gal__grid.is-expanded .gal__item--b{ grid-area:auto; grid-row:span 2; }
+.gal__grid.is-expanded .gal__item--c,
+.gal__grid.is-expanded .gal__item--f{ grid-area:auto; }
+.gal__grid.is-expanded .gal__item--d{ grid-area:auto; grid-row:span 2; }
+.gal__grid.is-expanded .gal__item--e{ grid-area:auto; grid-column:span 2; }
+
 .gal__item{
   position:relative;
   margin:0;
@@ -1298,6 +1324,7 @@ code{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em; 
   cursor:pointer;
   background:var(--charcoal);
   border:1px solid rgba(51,37,27,.12);
+  min-height:0;
 }
 .gal__item img{
   width:100%; height:100%; object-fit:cover;
@@ -1324,6 +1351,13 @@ code{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em; 
 .gal__item:hover img{ transform:scale(1.08); filter:grayscale(0) contrast(1.05); }
 .gal__item:hover figcaption{ opacity:1; }
 .gal__item:hover figcaption .ico{ transform:none; }
+
+.gal__more{
+  display:flex;
+  justify-content:center;
+  margin-top:clamp(28px,4vw,44px);
+}
+.gal__more[hidden]{ display:none; }
 
 /* lightbox */
 .lb{
@@ -1545,13 +1579,25 @@ code{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em; 
     grid-auto-rows:auto;
     gap:10px;
   }
-  .gal__item{ grid-area:auto; grid-column:auto; grid-row:auto; }
+  .gal__item--a,
+  .gal__item--b,
+  .gal__item--c,
+  .gal__item--d,
+  .gal__item--e,
+  .gal__item--f{ grid-area:auto; grid-column:auto; grid-row:auto; }
   .gal__item img{ height:auto; aspect-ratio:4/5; }
   /* two full-width breathers so the column doesn't read as a plain list */
   .gal__item--a,
   .gal__item--e{ grid-column:1 / -1; }
   .gal__item--a img,
   .gal__item--e img{ aspect-ratio:3/2; }
+
+  .gal__grid.is-expanded .gal__item--a,
+  .gal__grid.is-expanded .gal__item--b,
+  .gal__grid.is-expanded .gal__item--d,
+  .gal__grid.is-expanded .gal__item--e{ grid-column:auto; grid-row:auto; }
+  .gal__grid.is-expanded .gal__item--a,
+  .gal__grid.is-expanded .gal__item--e{ grid-column:1 / -1; }
 }
 
 @media (max-width:680px){

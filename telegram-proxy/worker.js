@@ -12,13 +12,20 @@
  *   2. cd telegram-proxy && wrangler deploy
  *   3. wrangler secret put BOT_TOKEN     ← from @BotFather
  *      wrangler secret put CHAT_ID       ← from @userinfobot, or a group id
+ *      wrangler secret put MAIL_FROM
+ *      wrangler secret put RESEND_API_KEY   (or BREVO_API_KEY)
  *   4. Copy the printed URL into BOOKING_ENDPOINT in ../script.js
+ *   5. Point the bot webhook at this same Worker URL (callback_query).
  *
  * Set ALLOWED_ORIGIN in wrangler.toml to your real domain once you have one;
  * '*' is fine while testing but lets any site post through your bot.
  */
 
-import { buildBookingMessage } from '../booking-message.cjs';
+import {
+  sendBookingToTelegram,
+  handleTelegramUpdate,
+  webhookSecret
+} from '../booking-message.cjs';
 
 export default {
   async fetch(request, env) {
@@ -26,6 +33,9 @@ export default {
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors(origin) });
+    }
+    if (request.method === 'GET') {
+      return json({ ok: true, service: 'pana-carlosa-booking' }, 200, origin);
     }
     if (request.method !== 'POST') {
       return json({ error: 'Method not allowed' }, 405, origin);
@@ -38,31 +48,38 @@ export default {
       return json({ error: 'Invalid JSON' }, 400, origin);
     }
 
+    if (body.callback_query || body.update_id) {
+      const expected = webhookSecret(env);
+      const got = request.headers.get('x-telegram-bot-api-secret-token') || '';
+      if (expected && got !== expected) {
+        return json({ error: 'Unauthorized' }, 401, origin);
+      }
+      try {
+        await handleTelegramUpdate(body, {
+          token: env.BOT_TOKEN,
+          chatId: env.CHAT_ID,
+          env
+        });
+      } catch (err) {
+        console.error('Telegram webhook failed:', err);
+      }
+      return json({ ok: true }, 200, origin);
+    }
+
     // A bot filled the hidden field — accept silently so it doesn't retry.
     if (body.company) return json({ ok: true }, 200, origin);
 
-    const missing = ['name', 'phone', 'service', 'date', 'time']
-      .filter((k) => !String(body[k] || '').trim());
-    if (missing.length) {
-      return json({ error: 'Missing fields', missing }, 400, origin);
-    }
-
-    const { text } = buildBookingMessage(body);
-
-    const tg = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: env.CHAT_ID,
-        text,
-        parse_mode: 'HTML',
-        disable_web_page_preview: true
-      })
+    const result = await sendBookingToTelegram(body, {
+      token: env.BOT_TOKEN,
+      chatId: env.CHAT_ID
     });
 
-    if (!tg.ok) {
-      // Log for `wrangler tail`, but never leak Telegram's response to the page.
-      console.error('Telegram error', tg.status, await tg.text());
+    if (result.missing) {
+      return json({ error: 'Missing fields', missing: result.missing }, 400, origin);
+    }
+
+    if (!result.ok) {
+      console.error('Telegram error', result.status, result.data);
       return json({ error: 'Upstream failed' }, 502, origin);
     }
 

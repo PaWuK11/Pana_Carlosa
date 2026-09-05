@@ -36,8 +36,8 @@
                  en: 'Could not send. Please call us or book on Booksy.' },
     noEndpoint:{ pl: 'Formularz nie jest jeszcze podłączony (patrz README §9).',
                  en: 'The form is not connected yet (see README §9).' },
-    sent:      { pl: 'Dziękujemy — zgłoszenie wysłane. Potwierdzimy termin telefonicznie.',
-                 en: 'Thank you — request sent. We will confirm your slot by phone.' }
+    sent:      { pl: 'Dziękujemy — zgłoszenie wysłane. Potwierdzenie albo odmowę wyślemy na e-mail.',
+                 en: 'Thank you — request sent. We will confirm or decline by email.' }
   };
   function t(key) { return MSG[key][LANG] || MSG[key].pl; }
 
@@ -101,6 +101,7 @@
       if (typeof picker !== 'undefined' && picker) picker.redraw();
 
       try { localStorage.setItem('pc-lang', lang); } catch (err) { /* private mode */ }
+      document.dispatchEvent(new CustomEvent('lang:change'));
     }
 
     buttons.forEach(function (b) {
@@ -370,16 +371,42 @@
     restart();
   })();
 
-  /* ── 6 · GALLERY LIGHTBOX ──────────────────────────────────────── */
+  /* ── 6 · GALLERY LIGHTBOX + SHOW ALL ───────────────────────────── */
   (function lightbox() {
     var items = $$('.gal__item');
     var box = $('#lightbox');
+    var grid = $('.gal__grid');
+    var moreBtn = $('#galMore');
     if (!items.length || !box) return;
 
     var img = $('#lbImg');
     var cap = $('#lbCap');
     var at = 0;
     var lastFocus = null;
+
+    if (moreBtn && grid) {
+      function syncMoreLabel() {
+        var expanded = grid.classList.contains('is-expanded');
+        var label = expanded
+          ? (LANG === 'en' ? moreBtn.getAttribute('data-en-less') : moreBtn.getAttribute('data-pl-less'))
+          : (LANG === 'en' ? moreBtn.getAttribute('data-en-more') : moreBtn.getAttribute('data-pl-more'));
+        if (label) moreBtn.textContent = label;
+        moreBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      }
+
+      moreBtn.addEventListener('click', function () {
+        var expand = !grid.classList.contains('is-expanded');
+        grid.classList.toggle('is-expanded', expand);
+        syncMoreLabel();
+        if (!expand) {
+          var section = $('#gallery');
+          if (section) section.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+        }
+      });
+
+      document.addEventListener('lang:change', syncMoreLabel);
+      syncMoreLabel();
+    }
 
     function show(i) {
       at = (i + items.length) % items.length;
@@ -618,6 +645,32 @@
     var status = $('#formStatus');
     var submitBtn = form.querySelector('button[type="submit"]');
 
+    function formatPhoneGroups(value) {
+      var digits = String(value || '').replace(/\D/g, '').slice(0, 9);
+      return digits.replace(/(\d{3})(?=\d)/g, '$1 ');
+    }
+
+    function syncPhoneCaret(input, next, cursor) {
+      var digitsBefore = String(input.value || '').slice(0, cursor).replace(/\D/g, '').length;
+      input.value = next;
+      var pos = 0, seen = 0;
+      while (pos < next.length && seen < digitsBefore) {
+        if (/\d/.test(next.charAt(pos))) seen += 1;
+        pos += 1;
+      }
+      try { input.setSelectionRange(pos, pos); } catch (err) { /* not focused */ }
+    }
+
+    var phoneInput = $('#f-phone');
+    var phoneCc = $('#f-phone-cc');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function () {
+        var next = formatPhoneGroups(phoneInput.value);
+        if (next === phoneInput.value) return;
+        syncPhoneCaret(phoneInput, next, phoneInput.selectionStart || 0);
+      });
+    }
+
     function setError(field, msg) {
       var wrap = field.closest('.field');
       if (!wrap) return;
@@ -644,7 +697,7 @@
     }
 
     var fields = $$('input, select, textarea', form)
-      .filter(function (f) { return f.name !== 'company'; });
+      .filter(function (f) { return f.name !== 'company' && f.id !== 'f-phone-cc'; });
 
     fields.forEach(function (f) {
       if (f.type === 'hidden') return;
@@ -681,6 +734,7 @@
 
       var data = Object.fromEntries(new FormData(form).entries());
       delete data.company;
+      data.phone = ((phoneCc && phoneCc.value) || '+48') + ' ' + formatPhoneGroups(data.phone);
       data.lang = LANG;
       data.duration = ($('#f-service').selectedOptions[0] || {}).dataset
         ? Number($('#f-service').selectedOptions[0].dataset.min) : null;
