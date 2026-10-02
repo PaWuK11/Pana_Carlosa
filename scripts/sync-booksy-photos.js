@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 /**
- * Pull public portfolio photos from the Pana Carlosa Booksy page and
- * rebuild the gallery markup in index.html.
+ * Sync the site gallery from the public Booksy listing.
+ * Photos stay on Booksy's CDN — nothing is stored under images/booksy/
+ * except a small URL manifest.
  *
  *   node scripts/sync-booksy-photos.js
- *
- * Downloads shop-owned photos only (biz / inspiration / service / resource).
- * Skips customer review photos and the logo.
  */
 const fs = require('fs');
 const path = require('path');
@@ -14,20 +12,19 @@ const https = require('https');
 const http = require('http');
 
 const ROOT = path.join(__dirname, '..');
-const OUT_DIR = path.join(ROOT, 'images', 'booksy');
 const INDEX = path.join(ROOT, 'index.html');
+const OUT_DIR = path.join(ROOT, 'images', 'booksy');
 const BOOKSY_URL =
   'https://booksy.com/pl-pl/185319_pana-carlosa_barber-shop_13750_wroclaw';
 const CATS = ['service_photos', 'inspiration', 'biz_photo', 'resource_photos'];
+const START = '<!-- booksy-gallery:start -->';
+const END = '<!-- booksy-gallery:end -->';
 const CAPTION = {
   service_photos: { pl: 'Realizacja', en: 'Our work' },
   inspiration: { pl: 'Inspiracja', en: 'Inspiration' },
   biz_photo: { pl: 'Salon', en: 'Shop' },
   resource_photos: { pl: 'Salon', en: 'Shop' }
 };
-
-const START = '<!-- booksy-gallery:start -->';
-const END = '<!-- booksy-gallery:end -->';
 
 function fetchText(url) {
   return new Promise((resolve, reject) => {
@@ -49,34 +46,7 @@ function fetchText(url) {
   });
 }
 
-function fetchFile(url, dest) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(dest);
-    https
-      .get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
-        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          file.close();
-          fs.unlink(dest, () => {});
-          return fetchFile(res.headers.location, dest).then(resolve, reject);
-        }
-        if (res.statusCode !== 200) {
-          file.close();
-          fs.unlink(dest, () => {});
-          return reject(new Error(`${url} → ${res.statusCode}`));
-        }
-        res.pipe(file);
-        file.on('finish', () => file.close(() => resolve(dest)));
-      })
-      .on('error', (err) => {
-        try {
-          fs.unlinkSync(dest);
-        } catch {}
-        reject(err);
-      });
-  });
-}
-
-function extractUrls(html) {
+function extractItems(html) {
   const unescaped = html.replace(/\\u002F/g, '/').replace(/\\\//g, '/');
   const re =
     /d375139ucebi94\.cloudfront\.net\/region2\/pl\/185319\/(biz_photo|inspiration|service_photos|review_photos|resource_photos|logo)\/([a-zA-Z0-9._-]+\.jpe?g)/g;
@@ -88,40 +58,45 @@ function extractUrls(html) {
       `https://d375139ucebi94.cloudfront.net/region2/pl/185319/${cat}/${m[2]}`
     );
   }
-  return Object.fromEntries(
-    Object.entries(byCat).map(([k, v]) => [k, [...v].sort()])
-  );
+  const items = [];
+  for (const cat of CATS) {
+    for (const src of [...byCat[cat]].sort()) {
+      items.push({ src, cat, file: path.basename(src) });
+    }
+  }
+  return items;
 }
 
 function mosaicClass(i) {
   return i < 6 ? ` gal__item--${'abcdef'[i]}` : '';
 }
 
-function buildGalleryBlock(manifest) {
-  const figures = manifest
+function buildGalleryBlock(items) {
+  const figures = items
     .map((item, i) => {
       const cap = CAPTION[item.cat] || CAPTION.service_photos;
       const loading = i < 6 ? 'eager' : 'lazy';
       return [
         `      <figure class="gal__item${mosaicClass(i)}">`,
-        `        <img src="${item.src}" alt="${cap.pl}" loading="${loading}" decoding="async">`,
+        `        <img src="${item.src}" alt="${cap.pl}" loading="${loading}" decoding="async" referrerpolicy="no-referrer">`,
         `        <figcaption><span data-en="${cap.en}">${cap.pl}</span><svg class="ico"><use href="#i-plus"/></svg></figcaption>`,
         `      </figure>`
       ].join('\n');
     })
     .join('\n');
 
-  const extra = Math.max(0, manifest.length - 6);
+  const extra = Math.max(0, items.length - 6);
   const moreBtn =
     extra > 0
       ? [
           `    <div class="gal__more">`,
           `      <button type="button" class="btn btn--dark" id="galMore"`,
-          `        data-en-more="Show all ${manifest.length} photos"`,
+          `        data-en-more="Show all ${items.length} photos"`,
           `        data-en-less="Show less"`,
-          `        data-pl-more="Pokaż wszystkie ${manifest.length} zdjęć"`,
-          `        data-pl-less="Pokaż mniej">`,
-          `        Pokaż wszystkie ${manifest.length} zdjęć`,
+          `        data-pl-more="Pokaż wszystkie ${items.length} zdjęć"`,
+          `        data-pl-less="Pokaż mniej"`,
+          `        aria-expanded="false">`,
+          `        Pokaż wszystkie ${items.length} zdjęć`,
           `      </button>`,
           `    </div>`
         ].join('\n')
@@ -139,98 +114,50 @@ function buildGalleryBlock(manifest) {
     `    </div>`,
     moreBtn,
     END
-  ]
-    .filter(Boolean)
-    .join('\n');
-}
-
-function ensureMarkers(html) {
-  if (html.includes(START) && html.includes(END)) return html;
-
-  // First sync: wrap the gallery section-head subtitle + grid.
-  const wrapped = html.replace(
-    /(<section class="gal section section--light" id="gallery">[\s\S]*?<span class="ornament"[^>]*><\/span>\s*)([\s\S]*?)(\s*<\/div>\s*<\/section>)/,
-    (_, head, mid, tail) => {
-      // mid is subtitle + grid; replace with markers around fresh content later
-      return `${head}${START}\n${mid.trim()}\n${END}${tail}`;
-    }
-  );
-  if (!wrapped.includes(START)) {
-    throw new Error('Could not locate gallery section to insert sync markers');
-  }
-  return wrapped;
+  ].join('\n');
 }
 
 function patchIndex(block) {
   let html = fs.readFileSync(INDEX, 'utf8');
-  html = ensureMarkers(html);
-  const next = html.replace(
-    new RegExp(`${START}[\\s\\S]*?${END}`),
-    block
-  );
+  if (!html.includes(START) || !html.includes(END)) {
+    throw new Error('Gallery markers missing in index.html');
+  }
+  const next = html.replace(new RegExp(`${START}[\\s\\S]*?${END}`), block);
   if (next === html && !html.includes(block)) {
     throw new Error('Could not replace booksy-gallery markers in index.html');
   }
   fs.writeFileSync(INDEX, next);
 }
 
-async function main() {
-  console.log('Fetching Booksy page…');
-  const page = await fetchText(BOOKSY_URL);
-  const byCat = extractUrls(page);
-  fs.mkdirSync(OUT_DIR, { recursive: true });
-
-  const jobs = [];
-  for (const cat of CATS) {
-    for (const url of byCat[cat] || []) {
-      const file = `${cat}-${path.basename(url)}`;
-      jobs.push({
-        url,
-        file,
-        dest: path.join(OUT_DIR, file),
-        src: `images/booksy/${file}`,
-        cat
-      });
-    }
-  }
-  console.log(`Found ${jobs.length} portfolio photos.`);
-
-  const keep = new Set(jobs.map((j) => j.file));
+function clearLocalPhotos() {
+  if (!fs.existsSync(OUT_DIR)) return 0;
+  let removed = 0;
   for (const name of fs.readdirSync(OUT_DIR)) {
     if (name === 'manifest.json') continue;
-    if (!keep.has(name)) {
-      fs.unlinkSync(path.join(OUT_DIR, name));
-      console.log(`removed stale ${name}`);
-    }
+    const dest = path.join(OUT_DIR, name);
+    if (!fs.statSync(dest).isFile()) continue;
+    fs.unlinkSync(dest);
+    removed++;
   }
+  return removed;
+}
 
-  let downloaded = 0;
-  const queue = [...jobs];
-  async function worker() {
-    while (queue.length) {
-      const job = queue.shift();
-      if (fs.existsSync(job.dest) && fs.statSync(job.dest).size > 1000) continue;
-      await fetchFile(job.url, job.dest);
-      downloaded++;
-      console.log(`✓ ${job.file}`);
-    }
-  }
-  await Promise.all([worker(), worker(), worker(), worker()]);
+async function main() {
+  console.log('Fetching Booksy page…');
+  const items = extractItems(await fetchText(BOOKSY_URL));
+  if (!items.length) throw new Error('No Booksy portfolio photos found');
 
-  const manifest = jobs.filter((j) => fs.existsSync(j.dest));
+  fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(
     path.join(OUT_DIR, 'manifest.json'),
-    JSON.stringify(
-      manifest.map(({ src, file, cat }) => ({ src, file, cat })),
-      null,
-      2
-    )
+    JSON.stringify(items, null, 2) + '\n'
   );
 
-  patchIndex(buildGalleryBlock(manifest));
-  console.log(
-    `\nSynced ${manifest.length} photos (${downloaded} newly downloaded). Gallery updated.`
-  );
+  patchIndex(buildGalleryBlock(items));
+  const removed = clearLocalPhotos();
+
+  console.log(`Gallery: ${items.length} photos from Booksy (CDN, not stored locally).`);
+  if (removed) console.log(`Removed ${removed} local copies from images/booksy/.`);
 }
 
 main().catch((err) => {

@@ -9,3 +9,10 @@
 
 # Node
 node_modules/
+
+# Booksy gallery is hotlinked from their CDN — do not keep those JPEGs here.
+images/booksy/*.jpeg
+images/booksy/*.jpg
+images/booksy/*.png
+images/booksy/*.webp
+images/booksy/*.avif

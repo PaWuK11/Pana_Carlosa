@@ -15,7 +15,7 @@ Pana Carlosa/
 ├── index.html     ← all content and text
 ├── styles.css     ← all design (colours, fonts, spacing) — tokens at the top
 ├── script.js      ← nav, slider, lightbox, form, animations
-├── images/        ← photos
+├── images/        ← site photos only (hero, about, barber…). Gallery is Booksy CDN
 ├── telegram-proxy/ ← Cloudflare Worker that forwards the form to Telegram
 ├── booking-message.cjs ← Telegram message + confirm/reject buttons
 ├── booking-email.cjs ← client emails after a decision
@@ -68,6 +68,17 @@ table below tells you which line to change. Any format works: `.jpg`, `.png`, `.
 | 508 | `appointment-chair.svg` | Vintage barber chair        | 900 × 1150 (4:5) |
 | 598 | `hours-bg.svg`          | Dark tools / interior       | 1800 × 900 |
 | 681–701 | `gallery-1…6.svg`   | Cuts, beards, tools, room   | 800–1200 wide |
+
+### Gallery
+
+The portfolio grid is **synced from Booksy**. Photos are not stored in this repo;
+`index.html` points at Booksy’s CDN. After new work is published on Booksy:
+
+```bash
+node scripts/sync-booksy-photos.js
+```
+
+Commit the updated `index.html` (and `images/booksy/manifest.json`) and push.
 
 `images/barber-2.svg` … `barber-4.svg` are left over from the earlier four-person
 layout and are no longer referenced — delete them if you like.
