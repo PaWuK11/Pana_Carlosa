@@ -111,10 +111,11 @@ function buildGalleryBlock(items) {
   const figures = items
     .map((item, i) => {
       const cap = CAPTION[item.cat] || CAPTION.service_photos;
+      const srcAttr = i < 6 ? `src="${item.src}"` : `data-src="${item.src}"`;
       const loading = i < 6 ? 'eager' : 'lazy';
       return [
         `      <figure class="gal__item${mosaicClass(i)}">`,
-        `        <img src="${item.src}" alt="${cap.pl}" loading="${loading}" decoding="async" referrerpolicy="no-referrer">`,
+        `        <img ${srcAttr} alt="${cap.pl}" loading="${loading}" decoding="async" referrerpolicy="no-referrer">`,
         `        <figcaption><span data-en="${cap.en}">${cap.pl}</span><svg class="ico"><use href="#i-plus"/></svg></figcaption>`,
         `      </figure>`
       ].join('\n');

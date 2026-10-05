@@ -3,7 +3,7 @@
    1. Sticky nav + mobile menu + active link
    2. Smooth-scroll offset for anchor links
    3. Scroll reveal
-   4. Hero parallax
+   4. (removed) Hero parallax
    5. Testimonial slider
    6. Gallery lightbox
    7. Booking form (front-end validation only — see README)
@@ -160,7 +160,6 @@
     var y = window.scrollY || window.pageYOffset;
     nav.classList.toggle('is-stuck', y > 60);
     toTop.classList.toggle('is-on', y > 700);
-    if (!reduced) parallax(y);
     ticking = false;
   }
   window.addEventListener('scroll', function () {
@@ -259,14 +258,7 @@
     revealables.forEach(function (el) { revealer.observe(el); });
   }
 
-  /* ── 4 · HERO PARALLAX ─────────────────────────────────────────── */
-  var heroMedia = $('.hero__media');
-  function parallax(y) {
-    if (!heroMedia || window.innerWidth < 900) return;
-    if (y < window.innerHeight * 1.2) {
-      heroMedia.style.transform = 'translate3d(0,' + (y * 0.18).toFixed(1) + 'px,0)';
-    }
-  }
+  /* ── 4 · (hero parallax removed — it janked scroll on the filtered hero image) ── */
 
   /* ── 5 · TESTIMONIAL SLIDER ────────────────────────────────────── */
   (function slider() {
@@ -397,6 +389,12 @@
       moreBtn.addEventListener('click', function () {
         var expand = !grid.classList.contains('is-expanded');
         grid.classList.toggle('is-expanded', expand);
+        if (expand) {
+          $$('img[data-src]', grid).forEach(function (im) {
+            im.src = im.getAttribute('data-src');
+            im.removeAttribute('data-src');
+          });
+        }
         syncMoreLabel();
         if (!expand) {
           var section = $('#gallery');
