@@ -1,10 +1,5 @@
 [
   {
-    "src": "https://d375139ucebi94.cloudfront.net/region2/pl/185319/service_photos/0e1e21b9b8c64c50bbf07b7deb5dad24.jpeg",
-    "cat": "service_photos",
-    "file": "0e1e21b9b8c64c50bbf07b7deb5dad24.jpeg"
-  },
-  {
     "src": "https://d375139ucebi94.cloudfront.net/region2/pl/185319/service_photos/0ff327960ac844d6af9556888d90256f.jpeg",
     "cat": "service_photos",
     "file": "0ff327960ac844d6af9556888d90256f.jpeg"
@@ -255,6 +250,11 @@
     "file": "12f563fc669842f885f404d9f5dafc-afro-fashion-polska-biz-photo-33f84207a55b471198ec83c344394c-booksy.jpeg"
   },
   {
+    "src": "https://d375139ucebi94.cloudfront.net/region2/pl/185319/biz_photo/21b40b5bde02453f89e5c808a7d0eb-afro-fashion-polska-biz-photo-b85dc65a167a423ba8f59af0c7f29c-booksy.jpeg",
+    "cat": "biz_photo",
+    "file": "21b40b5bde02453f89e5c808a7d0eb-afro-fashion-polska-biz-photo-b85dc65a167a423ba8f59af0c7f29c-booksy.jpeg"
+  },
+  {
     "src": "https://d375139ucebi94.cloudfront.net/region2/pl/185319/biz_photo/241b62d2c91c41619dd34b199fb0ad-afro-fashion-polska-biz-photo-3eb46419292845efb0db296fd5e3b4-booksy.jpeg",
     "cat": "biz_photo",
     "file": "241b62d2c91c41619dd34b199fb0ad-afro-fashion-polska-biz-photo-3eb46419292845efb0db296fd5e3b4-booksy.jpeg"
@@ -290,8 +290,8 @@
     "file": "c708426e0d9e47648a22208261adf3-afro-fashion-polska-biz-photo-09af55518c4444bba4d860dde88d40-booksy.jpeg"
   },
   {
-    "src": "https://d375139ucebi94.cloudfront.net/region2/pl/185319/resource_photos/a98628d8cc0443e3b933151cb61e7db1.jpeg",
-    "cat": "resource_photos",
-    "file": "a98628d8cc0443e3b933151cb61e7db1.jpeg"
+    "src": "https://d375139ucebi94.cloudfront.net/region2/pl/185319/biz_photo/dfe9f32f3d4443a88a51ba3f8b4a1d-afro-fashion-polska-biz-photo-e390e15387334010a2d8ed47aeb4e2-booksy.jpeg",
+    "cat": "biz_photo",
+    "file": "dfe9f32f3d4443a88a51ba3f8b4a1d-afro-fashion-polska-biz-photo-e390e15387334010a2d8ed47aeb4e2-booksy.jpeg"
   }
 ]

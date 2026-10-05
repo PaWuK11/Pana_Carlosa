@@ -4,8 +4,8 @@
  *
  *   node scripts/sync-booksy-photos.js
  *
- * Photos stay on Booksy's CDN. The first and last salon (biz_photo) images
- * are skipped — they are not barber work.
+ * Photos stay on Booksy's CDN. A small blocklist drops shots that are
+ * not barber work (meme dog, unrelated selfie).
  */
 const fs = require('fs');
 const path = require('path');
@@ -28,6 +28,11 @@ const REVIEWS_START = '<!-- booksy-reviews:start -->';
 const REVIEWS_END = '<!-- booksy-reviews:end -->';
 const REVIEW_LIMIT = 24;
 const REVIEW_MIN_LEN = 20;
+/* Filenames that must never appear in the gallery. */
+const BLOCKED_FILES = new Set([
+  '0e1e21b9b8c64c50bbf07b7deb5dad24.jpeg', // dog with a fade
+  'a98628d8cc0443e3b933151cb61e7db1.jpeg' // unrelated selfie
+]);
 const CAPTION = {
   service_photos: { pl: 'Realizacja', en: 'Our work' },
   inspiration: { pl: 'Inspiracja', en: 'Inspiration' },
@@ -94,23 +99,8 @@ function extractItems(html) {
   return items;
 }
 
-function skipFirstAndLastSalonPhotos(items, bizPhotos) {
-  const ordered = (bizPhotos || [])
-    .slice()
-    .sort((a, b) => (a.order || 0) - (b.order || 0))
-    .map((p) => String(p.image || '').split('?')[0]);
-  const skip = new Set();
-  if (ordered.length >= 2) {
-    skip.add(ordered[0]);
-    skip.add(ordered[ordered.length - 1]);
-  } else {
-    const salon = items.filter((i) => i.cat === 'biz_photo');
-    if (salon.length >= 2) {
-      skip.add(salon[0].src);
-      skip.add(salon[salon.length - 1].src);
-    }
-  }
-  return items.filter((i) => !skip.has(i.src.split('?')[0]));
+function dropBlocked(items) {
+  return items.filter((i) => !BLOCKED_FILES.has(i.file));
 }
 
 function mosaicClass(i) {
@@ -317,15 +307,12 @@ function clearLocalPhotos() {
 
 async function main() {
   console.log('Fetching Booksy page and API…');
-  const [html, biz, reviewData] = await Promise.all([
+  const [html, reviewData] = await Promise.all([
     fetchText(BOOKSY_URL),
-    fetchJson(`${BOOKSY_API}/`),
     fetchReviews()
   ]);
 
-  let items = extractItems(html);
-  const bizPhotos = (((biz.business || {}).images || {}).biz_photo) || [];
-  items = skipFirstAndLastSalonPhotos(items, bizPhotos);
+  let items = dropBlocked(extractItems(html));
   if (!items.length) throw new Error('No Booksy portfolio photos found');
   if (!reviewData.reviews.length) throw new Error('No Booksy reviews with text found');
 
@@ -351,7 +338,7 @@ async function main() {
   fs.writeFileSync(INDEX, page);
 
   const removed = clearLocalPhotos();
-  console.log(`Gallery: ${items.length} photos (skipped first & last salon shots).`);
+  console.log(`Gallery: ${items.length} photos (blocked ${BLOCKED_FILES.size} off-brief shots).`);
   console.log(`Reviews: ${reviewData.reviews.length} of ${reviewData.count} (${formatRank(reviewData.rank)}).`);
   if (removed) console.log(`Removed ${removed} local copies from images/booksy/.`);
 }
