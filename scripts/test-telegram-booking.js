@@ -33,7 +33,7 @@ function loadEnv(file) {
 loadEnv('.env');
 
 const SERVICES = [
-  'Strzyżenie włosów — 80 zł',
+  'Strzyżenie włosów — 90 zł',
   'Strzyżenie — 1. wizyta — 100 zł',
   'Strzyżenie dziecka — 70 zł',
   'Combo — strzyżenie + broda — 100 zł',

@@ -1139,6 +1139,10 @@ a.foot__addr:hover{ color:var(--gold); }
   font-style:italic;
   line-height:1.62;
   color:var(--brown);
+  display:-webkit-box;
+  -webkit-line-clamp:7;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 .tst__who{
   display:flex; align-items:center; gap:15px;
@@ -1169,7 +1173,7 @@ a.foot__addr:hover{ color:var(--gold); }
   display:flex; align-items:center; justify-content:center; gap:20px;
   margin-top:38px;
 }
-.tst__dots{ display:flex; gap:9px; }
+.tst__dots{ display:flex; flex-wrap:wrap; justify-content:center; gap:9px; max-width:min(420px,70vw); }
 .tst__dots button{
   width:9px; height:9px;
   border:1px solid var(--gold-dk);
