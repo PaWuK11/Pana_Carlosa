@@ -4,17 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pana Carlosa — Barber Shop</title>
-<meta name="description" content="Pana Carlosa Barber Shop — tradycyjne barberstwo, klasyczne strzyżenia i golenie na gorący ręcznik.">
-<meta name="theme-color" content="#0f0c09">
+<meta name="description" content="Pana Carlosa Barber Shop — Afro Fashion Polska. Twoja satysfakcja jest moim priorytetem.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="images/logo.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpg">
 
 <!-- ══ SOCIAL SHARE (edit later) ══ -->
 <meta property="og:title" content="Pana Carlosa — Barber Shop">
-<meta property="og:description" content="Tradycyjne barberstwo i klasyczna pielęgnacja.">
+<meta property="og:description" content="Twoja satysfakcja jest moim priorytetem. Afro Fashion Polska, Wrocław.">
+<meta property="og:image" content="images/logo.jpg">
 <meta property="og:type" content="website">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400..900&family=Oswald:wght@200..700&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200..700&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Great+Vibes&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -43,6 +46,7 @@
   <symbol id="i-clipper" viewBox="0 0 80 128"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M18 12h44v14H18z"/><path d="M23 12V5M31 12V5M39 12V5M47 12V5M55 12V5" stroke-linecap="round"/><path d="M21 26h38v70a9 9 0 0 1-9 9H30a9 9 0 0 1-9-9z"/><path d="M28 42h24M28 53h24" stroke-linecap="round" opacity=".7"/><path d="M40 105v6c0 8 8 11 16 11" stroke-linecap="round"/></g></symbol>
   <symbol id="i-comb" viewBox="0 0 128 44"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M6 26h116v11H6z"/><path d="M14 26V9M23 26V9M32 26V9M41 26V9M50 26V9M59 26V9M68 26V9M77 26V9M86 26V9M95 26V9M104 26V9M113 26V9" stroke-linecap="round"/></g></symbol>
   <symbol id="i-pole" viewBox="0 0 48 208"><defs><clipPath id="poleClip"><path d="M13 28h22v152H13z"/></clipPath></defs><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M24 4c6 0 10 4 10 10v6H14v-6c0-6 4-10 10-10z"/><rect x="10" y="20" width="28" height="9" rx="2"/><path d="M13 28h22v152H13z"/><g clip-path="url(#poleClip)" opacity=".85"><path d="M9 48 39 28M9 68 39 48M9 88 39 68M9 108 39 88M9 128 39 108M9 148 39 128M9 168 39 148M9 188 39 168"/></g><rect x="10" y="179" width="28" height="9" rx="2"/><path d="M24 204c6 0 10-4 10-10v-6H14v6c0 6 4 10 10 10z"/></g></symbol>
+  <symbol id="i-mark" viewBox="0 0 120 88"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="miter"><path d="M8 82 42 8l34 74z"/><path d="M30 82 64 8l34 74z"/><path d="M52 82 86 8l34 74z"/></g></symbol>
 </svg>
 
 <!-- film grain overlay -->
@@ -58,12 +62,10 @@
   <div class="nav__inner shell">
 
     <a class="brand" href="#home" aria-label="Pana Carlosa Barber Shop">
-      <span class="brand__mark" aria-hidden="true">
-        <svg viewBox="0 0 48 48"><rect x="4" y="4" width="40" height="40" transform="rotate(45 24 24)" fill="none" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"><path d="M17 31 31 17M31 31 17 17"/><circle cx="24" cy="24" r="1.6" fill="currentColor" stroke="none"/></g></svg>
-      </span>
+      <img class="brand__logo" src="images/logo.jpg" alt="" width="72" height="72">
       <span class="brand__text">
         <span class="brand__name">Pana Carlosa</span>
-        <span class="brand__sub">Barber Shop</span>
+        <span class="brand__sub">Afro Fashion Polska</span>
       </span>
     </a>
 
@@ -125,45 +127,23 @@
 
   <div class="hero__inner shell">
 
-    <!-- vintage emblem / monogram -->
-    <div class="emblem" data-reveal>
-      <svg viewBox="0 0 200 200" role="img" aria-label="Pana Carlosa Barber Shop">
-        <defs>
-          <path id="arcTop" d="M100,100 m-74,0 a74,74 0 0,1 148,0" fill="none"/>
-          <path id="arcBot" d="M100,100 m-58,0 a58,58 0 0,0 116,0" fill="none"/>
-        </defs>
-        <circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="1" opacity=".55"/>
-        <circle cx="100" cy="100" r="83" fill="none" stroke="currentColor" stroke-width="2.5" opacity=".85"/>
-        <circle cx="100" cy="100" r="66" fill="none" stroke="currentColor" stroke-width=".8" opacity=".4"/>
-        <text class="emblem__arc"><textPath href="#arcTop" startOffset="50%" text-anchor="middle">Pana Carlosa</textPath></text>
-        <text class="emblem__arc emblem__arc--sm"><textPath href="#arcBot" startOffset="50%" text-anchor="middle">Barber Shop</textPath></text>
-        <g stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round">
-          <path d="M74 118 126 74"/><path d="M126 118 74 74"/>
-          <circle cx="100" cy="96" r="3.2" fill="currentColor" stroke="none"/>
-          <path d="M70 122c-3 3-3 6 0 8s6 0 6-3M130 122c3 3 3 6 0 8s-6 0-6-3"/>
-        </g>
-        <path d="M78 137h44" stroke="currentColor" stroke-width="1" opacity=".6"/>
-      </svg>
+    <div class="hero__logo" data-reveal>
+      <img src="images/logo-mark.png" alt="Pana Carlosa — Afro Fashion Polska" width="1024" height="1024">
     </div>
 
-    <p class="hero__kicker" data-reveal data-en="Traditional barbering · since 2023">Tradycyjne barberstwo · od 2023</p>
+    <p class="hero__kicker" data-reveal data-en="Afro Fashion Polska · since 2023">Afro Fashion Polska · od 2023</p>
 
     <h1 class="hero__title" data-reveal>
       <span data-en="Your Style.">Twój styl.</span>
       <span class="hero__title-2" data-en="Your Confidence.">Twoja pewność siebie.</span>
     </h1>
 
-    <span class="ornament ornament--light" data-reveal aria-hidden="true"></span>
-
-    <p class="hero__sub" data-reveal data-en="Premium grooming in the old tradition — precision cuts, hot towel shaves and honest craft, delivered by barbers who take their time.">
-      Klasyczna pielęgnacja w starym stylu — precyzyjne strzyżenia, golenie na gorący
-      ręcznik i rzetelne rzemiosło. U nas nikt się nie spieszy.
-    </p>
-
     <div class="hero__actions" data-reveal>
       <a href="#appointment" class="btn btn--gold btn--lg" data-en="Book an Appointment">Umów wizytę</a>
       <a href="#services" class="btn btn--ghost btn--lg" data-en="View Service Menu">Zobacz cennik</a>
     </div>
+
+    <p class="hero__script" data-reveal data-en="Always available">Zawsze dostępny</p>
 
   </div>
 
@@ -185,16 +165,6 @@
         <!-- IMAGE PLACEHOLDER -->
         <img src="images/about_Carlos.jpg" alt="Barber tools placeholder">
       </div>
-      <span class="frame__badge" aria-hidden="true">
-        <svg viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="1"/>
-          <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width=".6" opacity=".6"/>
-          <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round">
-            <path d="M38 62 62 38M62 62 38 38"/>
-            <circle cx="50" cy="50" r="2.4" fill="currentColor" stroke="none"/>
-          </g>
-        </svg>
-      </span>
     </div>
 
     <div class="about__body" data-reveal>
@@ -394,16 +364,6 @@
           <!-- IMAGE PLACEHOLDER -->
           <img src="images/carlos.jpg" alt="Pan Carlos">
         </div>
-        <span class="frame__badge" aria-hidden="true">
-          <svg viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="1"/>
-            <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width=".6" opacity=".6"/>
-            <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round">
-              <path d="M38 62 62 38M62 62 38 38"/>
-              <circle cx="50" cy="50" r="2.4" fill="currentColor" stroke="none"/>
-            </g>
-          </svg>
-        </span>
       </div>
 
     </div>
@@ -1226,11 +1186,9 @@
 
     <div class="foot__col foot__col--brand">
 
-      <div class="signplate" role="img" aria-label="Pana Carlosa Barber Shop">
-        <span class="signplate__l1">Pana Carlosa</span>
-        <span class="signplate__rule" aria-hidden="true"></span>
-        <span class="signplate__l2">Barber Shop</span>
-      </div>
+      <a class="foot__logo" href="#home">
+        <img src="images/logo-mark.png" alt="Pana Carlosa — Afro Fashion Polska" width="1024" height="1024">
+      </a>
 
       <p class="foot__blurb" data-en="Traditional barbering in Pasaż Zielińskiego, Wrocław. 4.9 out of 5 from 374 reviews.">
         Tradycyjny barbering w Pasażu Zielińskiego we Wrocławiu. 4,9 na 5 z 374 opinii.</p>
