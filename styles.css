@@ -994,9 +994,11 @@ a.foot__addr:hover{ color:var(--gold); }
 .field--picker > label{ margin-bottom:12px; }
 .picker{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 148px;
+  grid-template-columns:minmax(0,1fr) 156px;
+  align-items:stretch;
+  overflow:hidden;
   border:1px solid rgba(0,0,0,.2);
-  background:rgba(246,241,231,.5);
+  background:rgba(255,255,255,.55);
 }
 .picker__cal{ padding:16px 16px 18px; }
 
@@ -1017,7 +1019,7 @@ a.foot__addr:hover{ color:var(--gold); }
   color:var(--txt-dark); font-size:15px;
   transition:all .25s var(--ease);
 }
-.picker__nav:hover:not(:disabled){ background:var(--ink); border-color:var(--ink); color:var(--gold); }
+.picker__nav:hover:not(:disabled){ background:var(--ink); border-color:var(--ink); color:#fff; }
 .picker__nav:disabled{ opacity:.28; cursor:default; }
 
 .picker__weekdays,
@@ -1038,35 +1040,39 @@ a.foot__addr:hover{ color:var(--gold); }
   border:1px solid transparent;
   transition:all .2s var(--ease);
 }
-.picker__day:hover:not(:disabled){ border-color:var(--gold); }
+.picker__day:hover:not(:disabled){ border-color:var(--ink); }
 .picker__day.is-today{ border-color:rgba(0,0,0,.25); }
 .picker__day.is-off{
-  color:rgba(109,96,85,.35);
+  color:rgba(0,0,0,.28);
   text-decoration:line-through;
   cursor:default;
 }
 .picker__day.is-on{
   background:var(--ink); border-color:var(--ink);
-  color:var(--gold-lt); font-weight:500;
+  color:#fff; font-weight:500;
 }
 
 .picker__times{
   border-left:1px solid rgba(0,0,0,.16);
-  padding:16px 14px;
+  padding:16px 12px 16px 14px;
   display:flex; flex-direction:column;
   min-height:0;
+  overflow:hidden;
 }
 .picker__times-h{
   margin:0 0 10px;
   font-family:var(--f-cond);
   font-size:10.5px; letter-spacing:.22em; text-transform:uppercase;
   color:var(--txt-mute);
+  flex:none;
 }
 .picker__slots{
   display:grid; gap:6px;
-  max-height:266px; overflow-y:auto;
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
   scrollbar-width:thin;
-  padding-right:2px;
+  padding-right:4px;
 }
 .picker__slot{
   padding:9px 6px;
@@ -1076,8 +1082,8 @@ a.foot__addr:hover{ color:var(--gold); }
   color:var(--txt-dark);
   transition:all .2s var(--ease);
 }
-.picker__slot:hover{ border-color:var(--gold); background:rgba(0,0,0,.06); }
-.picker__slot.is-on{ background:var(--ink); border-color:var(--ink); color:var(--gold-lt); }
+.picker__slot:hover{ border-color:var(--ink); background:rgba(0,0,0,.06); }
+.picker__slot.is-on{ background:var(--ink); border-color:var(--ink); color:#fff; }
 .picker__hint{
   margin:0; font-family:var(--f-serif); font-style:italic;
   font-size:14px; color:var(--txt-mute); line-height:1.45;
@@ -1107,6 +1113,7 @@ a.foot__addr:hover{ color:var(--gold); }
   .picker__slots{
     grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
     max-height:240px;
+    flex:none;
   }
   .picker__day{ font-size:15px; }
 }
