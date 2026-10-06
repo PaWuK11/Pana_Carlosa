@@ -5,7 +5,9 @@ const SHOP = {
   fullName: 'Pana Carlosa Barber Shop',
   phone: '+48 788 354 540',
   address: 'Pasaż Zielińskiego, Aleja Niebieska, Stoisko 11.11, 50-088 Wrocław',
-  maps: 'https://www.google.com/maps/search/?api=1&query=Pasa%C5%BC+Zieli%C5%84skiego,+Aleja+Niebieska,+Stoisko+11.11,+50-088+Wroc%C5%82aw'
+  maps: 'https://www.google.com/maps/search/?api=1&query=Pasa%C5%BC+Zieli%C5%84skiego,+Aleja+Niebieska,+Stoisko+11.11,+50-088+Wroc%C5%82aw',
+  site: 'https://panacarlosa.netlify.app',
+  logo: 'https://panacarlosa.netlify.app/images/logo.jpg'
 };
 
 const MONTHS = {
@@ -90,8 +92,27 @@ function copy(booking, action) {
 
 function labels(lang) {
   return lang === 'en'
-    ? { service: 'Service', when: 'Date & time', phone: 'Phone', address: 'Address' }
-    : { service: 'Usługa', when: 'Termin', phone: 'Telefon', address: 'Adres' };
+    ? {
+        service: 'Service',
+        when: 'Date & time',
+        phone: 'Phone',
+        address: 'Address'
+      }
+    : {
+        service: 'Usługa',
+        when: 'Termin',
+        phone: 'Telefon',
+        address: 'Adres'
+      };
+}
+
+function detailRow(label, value) {
+  return `<tr>
+    <td style="padding:12px 0 4px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#767676;">${esc(label)}</td>
+  </tr>
+  <tr>
+    <td style="padding:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:18px;line-height:1.4;color:#111111;border-bottom:1px solid #ececec;">${value}</td>
+  </tr>`;
 }
 
 function buildDecisionEmail(booking, action) {
@@ -100,6 +121,8 @@ function buildDecisionEmail(booking, action) {
   const l = labels(lang);
   const when = `${formatDate(booking.date, lang)}, ${booking.time}` +
     (booking.duration ? ` (${booking.duration} min)` : '');
+  const ok = action === 'ok';
+  const statusBg = ok ? '#111111' : '#5c5c5c';
 
   const text = [
     t.intro,
@@ -111,20 +134,81 @@ function buildDecisionEmail(booking, action) {
     '',
     t.closing,
     '',
-    SHOP.fullName
+    SHOP.fullName,
+    SHOP.site
   ].join('\n');
 
   const html = `<!DOCTYPE html>
 <html lang="${lang}">
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:16px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;">
-  <p style="margin:0 0 12px;">${esc(t.intro)}</p>
-  <p style="margin:0 0 6px;"><strong>${esc(l.service)}:</strong> ${esc(booking.service)}</p>
-  <p style="margin:0 0 6px;"><strong>${esc(l.when)}:</strong> ${esc(when)}</p>
-  <p style="margin:0 0 6px;"><strong>${esc(l.address)}:</strong> ${esc(SHOP.address)}</p>
-  <p style="margin:0 0 16px;"><strong>${esc(l.phone)}:</strong> ${esc(SHOP.phone)}</p>
-  <p style="margin:0 0 16px;">${esc(t.closing)}</p>
-  <p style="margin:0;font-size:14px;color:#333333;">${esc(SHOP.fullName)}</p>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(t.subject)}</title>
+</head>
+<body style="margin:0;padding:0;background:#f3f1ec;color:#111111;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f1ec;">
+    <tr>
+      <td align="center" style="padding:28px 12px;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border:1px solid #e4e1d8;">
+          <tr>
+            <td style="height:6px;background:#111111;font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:28px 28px 20px;background:#ffffff;">
+              <img src="${esc(SHOP.logo)}" alt="${esc(SHOP.name)}" width="72" height="72" style="display:block;width:72px;height:72px;border:0;margin:0 auto 14px;">
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:20px;letter-spacing:.22em;text-transform:uppercase;color:#111111;">${esc(SHOP.name)}</p>
+              <p style="margin:6px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#7a7a7a;">Afro Fashion Polska</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 28px;">
+              <div style="height:1px;background:#111111;opacity:.12;font-size:0;line-height:0;">&nbsp;</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 28px 8px;">
+              <p style="margin:0 0 14px;">
+                <span style="display:inline-block;background:${statusBg};color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:6px 10px;">${esc(t.status)}</span>
+              </p>
+              <h1 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:1.25;font-weight:400;color:#111111;">${esc(t.heading)}</h1>
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.6;color:#333333;">${esc(t.intro)}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 28px 12px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                ${detailRow(l.service, esc(booking.service))}
+                ${detailRow(l.when, esc(when))}
+                ${detailRow(l.address, `<a href="${esc(SHOP.maps)}" style="color:#111111;text-decoration:none;">${esc(SHOP.address)}</a>`)}
+                ${detailRow(l.phone, `<a href="tel:${SHOP.phone.replace(/\s/g, '')}" style="color:#111111;text-decoration:none;">${esc(SHOP.phone)}</a>`)}
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 28px 28px;">
+              <p style="margin:0 0 22px;font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.6;color:#333333;">${esc(t.closing)}</p>
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background:#111111;">
+                    <a href="${esc(SHOP.site)}" style="display:inline-block;padding:12px 18px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#ffffff;text-decoration:none;">${lang === 'en' ? 'Visit the website' : 'Strona salonu'}</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 28px 24px;background:#faf9f6;border-top:1px solid #ececec;">
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.55;color:#6b6b6b;">
+                ${esc(SHOP.fullName)}<br>
+                ${esc(SHOP.address)}<br>
+                <a href="tel:${SHOP.phone.replace(/\s/g, '')}" style="color:#6b6b6b;text-decoration:none;">${esc(SHOP.phone)}</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 
