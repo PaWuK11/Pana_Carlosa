@@ -121,9 +121,6 @@ function buildDecisionEmail(booking, action) {
   const l = labels(lang);
   const when = `${formatDate(booking.date, lang)}, ${booking.time}` +
     (booking.duration ? ` (${booking.duration} min)` : '');
-  const ok = action === 'ok';
-  const statusBg = ok ? '#111111' : '#5c5c5c';
-
   const text = [
     t.intro,
     '',
@@ -134,8 +131,7 @@ function buildDecisionEmail(booking, action) {
     '',
     t.closing,
     '',
-    SHOP.fullName,
-    SHOP.site
+    SHOP.fullName
   ].join('\n');
 
   const html = `<!DOCTYPE html>
@@ -154,8 +150,7 @@ function buildDecisionEmail(booking, action) {
             <td style="height:6px;background:#111111;font-size:0;line-height:0;">&nbsp;</td>
           </tr>
           <tr>
-            <td align="center" style="padding:28px 28px 20px;background:#ffffff;">
-              <img src="${esc(SHOP.logo)}" alt="${esc(SHOP.name)}" width="72" height="72" style="display:block;width:72px;height:72px;border:0;margin:0 auto 14px;">
+            <td align="center" style="padding:28px 28px 18px;">
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:20px;letter-spacing:.22em;text-transform:uppercase;color:#111111;">${esc(SHOP.name)}</p>
               <p style="margin:6px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#7a7a7a;">Afro Fashion Polska</p>
             </td>
@@ -167,9 +162,7 @@ function buildDecisionEmail(booking, action) {
           </tr>
           <tr>
             <td style="padding:28px 28px 8px;">
-              <p style="margin:0 0 14px;">
-                <span style="display:inline-block;background:${statusBg};color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:6px 10px;">${esc(t.status)}</span>
-              </p>
+              <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#767676;">${esc(t.status)}</p>
               <h1 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:1.25;font-weight:400;color:#111111;">${esc(t.heading)}</h1>
               <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.6;color:#333333;">${esc(t.intro)}</p>
             </td>
@@ -179,21 +172,14 @@ function buildDecisionEmail(booking, action) {
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 ${detailRow(l.service, esc(booking.service))}
                 ${detailRow(l.when, esc(when))}
-                ${detailRow(l.address, `<a href="${esc(SHOP.maps)}" style="color:#111111;text-decoration:none;">${esc(SHOP.address)}</a>`)}
-                ${detailRow(l.phone, `<a href="tel:${SHOP.phone.replace(/\s/g, '')}" style="color:#111111;text-decoration:none;">${esc(SHOP.phone)}</a>`)}
+                ${detailRow(l.address, esc(SHOP.address))}
+                ${detailRow(l.phone, esc(SHOP.phone))}
               </table>
             </td>
           </tr>
           <tr>
             <td style="padding:8px 28px 28px;">
-              <p style="margin:0 0 22px;font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.6;color:#333333;">${esc(t.closing)}</p>
-              <table role="presentation" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td style="background:#111111;">
-                    <a href="${esc(SHOP.site)}" style="display:inline-block;padding:12px 18px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#ffffff;text-decoration:none;">${lang === 'en' ? 'Visit the website' : 'Strona salonu'}</a>
-                  </td>
-                </tr>
-              </table>
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.6;color:#333333;">${esc(t.closing)}</p>
             </td>
           </tr>
           <tr>
@@ -201,7 +187,7 @@ function buildDecisionEmail(booking, action) {
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.55;color:#6b6b6b;">
                 ${esc(SHOP.fullName)}<br>
                 ${esc(SHOP.address)}<br>
-                <a href="tel:${SHOP.phone.replace(/\s/g, '')}" style="color:#6b6b6b;text-decoration:none;">${esc(SHOP.phone)}</a>
+                ${esc(SHOP.phone)}
               </p>
             </td>
           </tr>
