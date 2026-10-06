@@ -259,7 +259,7 @@ async function handleTelegramUpdate(update, { token, chatId, env }) {
     return { ok: false, error: 'Missing payload' };
   }
 
-  let mail = { ok: false, error: 'Set MAIL_FROM and RESEND_API_KEY or BREVO_API_KEY' };
+  let mail = { ok: false, error: 'Set MAIL_FROM and SMTP_USER/SMTP_PASS (Gmail) or a mail API key' };
   if (mailReady(env)) {
     try {
       mail = await sendDecisionEmail(booking, action, env);

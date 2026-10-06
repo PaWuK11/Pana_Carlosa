@@ -290,7 +290,7 @@ http.createServer((req, res) => {
     if (mailReady(process.env)) {
       console.log('Decisions → client e-mail (MAIL_FROM + mail API key)');
     } else {
-      console.log('Decisions → Telegram only (add MAIL_FROM + RESEND_API_KEY or BREVO_API_KEY)');
+      console.log('Decisions → Telegram only (add MAIL_FROM + Gmail SMTP_USER/SMTP_PASS)');
     }
     startTelegramPolling();
   } else {

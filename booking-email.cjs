@@ -147,11 +147,134 @@ function buildDecisionEmail(booking, action) {
   return { subject: t.subject, text, html };
 }
 
+function smtpConfig(env) {
+  const user = String(env.SMTP_USER || '').trim();
+  const pass = String(env.SMTP_PASS || '').replace(/\s+/g, '');
+  if (!user || !pass) return null;
+  const gmail = /@(gmail|googlemail)\.com$/i.test(user);
+  const host = String(env.SMTP_HOST || '').trim() || (gmail ? 'smtp.gmail.com' : '');
+  if (!host) return null;
+  const port = Number(env.SMTP_PORT) || 465;
+  return { host, port, user, pass };
+}
+
 function mailReady(env) {
   const from = parseFrom(env.MAIL_FROM, env.MAIL_FROM_NAME || SHOP.name);
   const hasFrom = Boolean(from.email && from.email.includes('@'));
-  const hasProvider = Boolean(env.RESEND_API_KEY || env.BREVO_API_KEY);
+  const hasProvider = Boolean(smtpConfig(env) || env.BREVO_API_KEY || env.RESEND_API_KEY);
   return hasFrom && hasProvider;
+}
+
+function encodeSubject(subject) {
+  return `=?UTF-8?B?${Buffer.from(String(subject), 'utf8').toString('base64')}?=`;
+}
+
+function buildMime({ from, to, toName, subject, html, text }) {
+  const boundary = 'pc' + Date.now().toString(16);
+  const fromLine = from.name ? `${from.name} <${from.email}>` : from.email;
+  const toLine = toName ? `${toName} <${to}>` : to;
+  const plain = String(text || '').replace(/\r?\n/g, '\r\n');
+  const rich = String(html || '').replace(/\r?\n/g, '\r\n');
+  return [
+    `From: ${fromLine}`,
+    `To: ${toLine}`,
+    `Subject: ${encodeSubject(subject)}`,
+    'MIME-Version: 1.0',
+    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+    '',
+    `--${boundary}`,
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: 8bit',
+    '',
+    plain,
+    `--${boundary}`,
+    'Content-Type: text/html; charset=UTF-8',
+    'Content-Transfer-Encoding: 8bit',
+    '',
+    rich,
+    `--${boundary}--`,
+    ''
+  ].join('\r\n');
+}
+
+function waitReply(socket) {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('SMTP timeout'));
+    }, 15000);
+    function onData(chunk) {
+      data += chunk.toString('utf8');
+      const lines = data.split('\r\n').filter(Boolean);
+      const last = lines[lines.length - 1] || '';
+      if (/^\d{3} /.test(last) && data.endsWith('\r\n')) {
+        cleanup();
+        resolve({ code: Number(last.slice(0, 3)), text: data.trim() });
+      }
+    }
+    function onErr(err) {
+      cleanup();
+      reject(err);
+    }
+    function cleanup() {
+      clearTimeout(timer);
+      socket.off('data', onData);
+      socket.off('error', onErr);
+    }
+    socket.on('data', onData);
+    socket.on('error', onErr);
+  });
+}
+
+async function smtpCmd(socket, line) {
+  socket.write(line + '\r\n');
+  return waitReply(socket);
+}
+
+function sendSmtp({ host, port, user, pass, from, to, toName, subject, html, text }) {
+  const tls = require('tls');
+  return new Promise((resolve) => {
+    const socket = tls.connect({ host, port, servername: host }, async () => {
+      try {
+        const greet = await waitReply(socket);
+        if (greet.code !== 220) throw new Error(greet.text);
+        let ehlo = await smtpCmd(socket, `EHLO panacarlosa`);
+        if (ehlo.code !== 250) throw new Error(ehlo.text);
+        let auth = await smtpCmd(socket, 'AUTH LOGIN');
+        if (auth.code !== 334) throw new Error(auth.text);
+        auth = await smtpCmd(socket, Buffer.from(user).toString('base64'));
+        if (auth.code !== 334) throw new Error(auth.text);
+        auth = await smtpCmd(socket, Buffer.from(pass).toString('base64'));
+        if (auth.code !== 235) throw new Error(auth.text);
+        let reply = await smtpCmd(socket, `MAIL FROM:<${from.email}>`);
+        if (reply.code !== 250) throw new Error(reply.text);
+        reply = await smtpCmd(socket, `RCPT TO:<${to}>`);
+        if (reply.code !== 250) throw new Error(reply.text);
+        reply = await smtpCmd(socket, 'DATA');
+        if (reply.code !== 354) throw new Error(reply.text);
+        const mime = buildMime({ from, to, toName, subject, html, text })
+          .replace(/(^|\r\n)\./g, '$1..');
+        socket.write(mime + '\r\n.\r\n');
+        reply = await waitReply(socket);
+        if (reply.code !== 250) throw new Error(reply.text);
+        await smtpCmd(socket, 'QUIT').catch(() => {});
+        socket.end();
+        resolve({ ok: true, provider: 'smtp' });
+      } catch (err) {
+        try { socket.destroy(); } catch { /* ignore */ }
+        resolve({ ok: false, error: err.message || 'SMTP failed' });
+      }
+    });
+    socket.setTimeout(15000);
+    socket.on('timeout', () => {
+      socket.destroy();
+      resolve({ ok: false, error: 'SMTP timeout' });
+    });
+    socket.on('error', (err) => {
+      resolve({ ok: false, error: err.message || 'SMTP failed' });
+    });
+  });
 }
 
 async function sendMail({ to, toName, subject, html, text }, env) {
@@ -163,13 +286,17 @@ async function sendMail({ to, toName, subject, html, text }, env) {
     return { ok: false, error: 'MAIL_FROM is not set' };
   }
 
-  if (env.RESEND_API_KEY) {
-    return sendResend({ to, subject, html, text, from }, env.RESEND_API_KEY);
+  const smtp = smtpConfig(env);
+  if (smtp) {
+    return sendSmtp({ ...smtp, from, to, toName, subject, html, text });
   }
   if (env.BREVO_API_KEY) {
     return sendBrevo({ to, toName, subject, html, text, from }, env.BREVO_API_KEY);
   }
-  return { ok: false, error: 'Set RESEND_API_KEY or BREVO_API_KEY' };
+  if (env.RESEND_API_KEY) {
+    return sendResend({ to, subject, html, text, from }, env.RESEND_API_KEY);
+  }
+  return { ok: false, error: 'Set SMTP_USER + SMTP_PASS (Gmail) or BREVO_API_KEY' };
 }
 
 async function sendResend({ to, subject, html, text, from }, apiKey) {
