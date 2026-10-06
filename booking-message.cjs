@@ -268,15 +268,6 @@ async function handleTelegramUpdate(update, { token, chatId, env }) {
     }
   }
 
-  if (!mail.ok) {
-    await tgApi(token, 'answerCallbackQuery', {
-      callback_query_id: cb.id,
-      text: `Email was not sent: ${mail.error}`,
-      show_alert: true
-    });
-    return { ok: false, action, mail, booking };
-  }
-
   const messageId = cb.message && cb.message.message_id;
   if (messageId) {
     await tgApi(token, 'editMessageText', {
@@ -290,7 +281,10 @@ async function handleTelegramUpdate(update, { token, chatId, env }) {
 
   await tgApi(token, 'answerCallbackQuery', {
     callback_query_id: cb.id,
-    text: action === 'ok' ? 'Confirmed. Email sent.' : 'Declined. Email sent.'
+    text: mail.ok
+      ? (action === 'ok' ? 'Confirmed. Email sent.' : 'Declined. Email sent.')
+      : `Saved, but email was not sent: ${mail.error}`,
+    show_alert: !mail.ok
   });
 
   return { ok: true, action, mail, booking };

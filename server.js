@@ -179,6 +179,8 @@ function startTelegramPolling() {
   if (!token || !chatId) return;
 
   let offset = 0;
+  let delay = 400;
+  let lastError = '';
   let warned409 = false;
 
   async function takeOverWebhook() {
@@ -201,16 +203,19 @@ function startTelegramPolling() {
         if (/conflict|webhook/i.test(desc)) {
           if (!warned409) {
             warned409 = true;
-            console.log('Telegram webhook is set on production — local buttons are handled there.');
-            console.log('To test decisions locally: TELEGRAM_POLL=1 node server.js');
+            console.log('Telegram webhook is set — Confirm/Decline are handled in production, not on this machine.');
+            console.log('To handle buttons here: TELEGRAM_POLL=1 node server.js');
           }
           setTimeout(poll, 30000);
           return;
         }
         console.error('[telegram-poll]', result.status, desc);
-        setTimeout(poll, 5000);
+        delay = Math.min(delay * 2, 30000);
+        setTimeout(poll, delay);
         return;
       }
+      delay = 400;
+      lastError = '';
       const updates = (result.data && result.data.result) || [];
       for (const update of updates) {
         offset = update.update_id + 1;
@@ -221,10 +226,17 @@ function startTelegramPolling() {
           console.error('[telegram-poll] decision failed:', err);
         }
       }
+      setTimeout(poll, 400);
     } catch (err) {
-      console.error('[telegram-poll]', err.message || err);
+      const cause = err.cause && err.cause.message ? ` (${err.cause.message})` : '';
+      const msg = (err.message || String(err)) + cause;
+      if (msg !== lastError) {
+        lastError = msg;
+        console.error('[telegram-poll]', msg, '— retrying with backoff');
+      }
+      delay = Math.min(Math.max(delay, 2000) * 2, 30000);
+      setTimeout(poll, delay);
     }
-    setTimeout(poll, 400);
   }
 
   takeOverWebhook().finally(poll);
