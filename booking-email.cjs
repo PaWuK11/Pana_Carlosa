@@ -54,36 +54,36 @@ function copy(booking, action) {
   if (lang === 'en') {
     if (action === 'ok') {
       return {
-        subject: `Your appointment is confirmed — ${SHOP.name}`,
+        subject: `Appointment confirmation, ${SHOP.name}`,
         heading: 'See you at the shop',
         intro: `Hi ${booking.name}, your visit is confirmed.`,
-        closing: 'If you need to change the time, call us — please do not just skip the slot.',
+        closing: 'If you need to change the time, please call us.',
         status: 'Confirmed'
       };
     }
     return {
-      subject: `We could not confirm your appointment — ${SHOP.name}`,
+      subject: `Appointment update, ${SHOP.name}`,
       heading: 'This time did not work',
       intro: `Hi ${booking.name}, we cannot confirm the slot you asked for.`,
-      closing: 'Please pick another time on the website or call us and we will find something that works.',
+      closing: 'Please pick another time on the website or call us.',
       status: 'Not confirmed'
     };
   }
 
   if (action === 'ok') {
     return {
-      subject: `Wizyta potwierdzona — ${SHOP.name}`,
+      subject: `Potwierdzenie wizyty, ${SHOP.name}`,
       heading: 'Do zobaczenia w zakładzie',
       intro: `Cześć ${booking.name}, potwierdzamy Twoją wizytę.`,
-      closing: 'Jeśli musisz zmienić godzinę, zadzwoń — prosimy nie opuszczać terminu bez uprzedzenia.',
+      closing: 'Jeśli musisz zmienić godzinę, zadzwoń proszę.',
       status: 'Potwierdzona'
     };
   }
   return {
-    subject: `Nie potwierdziliśmy wizyty — ${SHOP.name}`,
+    subject: `Informacja o wizycie, ${SHOP.name}`,
     heading: 'Ten termin nie wszedł',
     intro: `Cześć ${booking.name}, niestety nie możemy potwierdzić wybranego terminu.`,
-    closing: 'Wybierz inną godzinę na stronie albo zadzwoń — znajdziemy coś, co pasuje.',
+    closing: 'Wybierz inną godzinę na stronie albo zadzwoń.',
     status: 'Niepotwierdzona'
   };
 }
@@ -98,10 +98,8 @@ function buildDecisionEmail(booking, action) {
   const lang = booking.lang === 'en' ? 'en' : 'pl';
   const t = copy(booking, action);
   const l = labels(lang);
-  const when = `${formatDate(booking.date, lang)} · ${booking.time}` +
+  const when = `${formatDate(booking.date, lang)}, ${booking.time}` +
     (booking.duration ? ` (${booking.duration} min)` : '');
-  const ok = action === 'ok';
-  const accent = ok ? '#c4a35a' : '#8a3a32';
 
   const text = [
     t.intro,
@@ -118,29 +116,15 @@ function buildDecisionEmail(booking, action) {
 
   const html = `<!DOCTYPE html>
 <html lang="${lang}">
-<body style="margin:0;padding:0;background:#14110e;color:#f3ead8;font-family:Georgia,'Times New Roman',serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#14110e;padding:32px 12px;">
-    <tr><td align="center">
-      <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#1c1814;border:1px solid #3a3228;">
-        <tr><td style="padding:28px 28px 12px;border-bottom:3px solid ${accent};">
-          <p style="margin:0 0 6px;letter-spacing:.18em;text-transform:uppercase;font-size:11px;color:${accent};font-family:Arial,sans-serif;">${esc(SHOP.fullName)}</p>
-          <h1 style="margin:0;font-size:26px;line-height:1.25;font-weight:400;color:#f3ead8;">${esc(t.heading)}</h1>
-        </td></tr>
-        <tr><td style="padding:24px 28px 8px;font-size:16px;line-height:1.6;">
-          <p style="margin:0 0 18px;">${esc(t.intro)}</p>
-          <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:${accent};">${esc(t.status)}</p>
-          <p style="margin:0 0 6px;"><strong>${esc(l.service)}:</strong> ${esc(booking.service)}</p>
-          <p style="margin:0 0 6px;"><strong>${esc(l.when)}:</strong> ${esc(when)}</p>
-          <p style="margin:0 0 6px;"><strong>${esc(l.address)}:</strong> <a href="${esc(SHOP.maps)}" style="color:#c4a35a;">${esc(SHOP.address)}</a></p>
-          <p style="margin:0 0 18px;"><strong>${esc(l.phone)}:</strong> <a href="tel:${SHOP.phone.replace(/\s/g, '')}" style="color:#c4a35a;">${esc(SHOP.phone)}</a></p>
-          <p style="margin:0 0 8px;">${esc(t.closing)}</p>
-        </td></tr>
-        <tr><td style="padding:8px 28px 28px;font-size:13px;color:#b9a992;font-family:Arial,sans-serif;">
-          ${esc(SHOP.fullName)}
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:16px;background:#ffffff;color:#111111;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;">
+  <p style="margin:0 0 12px;">${esc(t.intro)}</p>
+  <p style="margin:0 0 6px;"><strong>${esc(l.service)}:</strong> ${esc(booking.service)}</p>
+  <p style="margin:0 0 6px;"><strong>${esc(l.when)}:</strong> ${esc(when)}</p>
+  <p style="margin:0 0 6px;"><strong>${esc(l.address)}:</strong> ${esc(SHOP.address)}</p>
+  <p style="margin:0 0 16px;"><strong>${esc(l.phone)}:</strong> ${esc(SHOP.phone)}</p>
+  <p style="margin:0 0 16px;">${esc(t.closing)}</p>
+  <p style="margin:0;font-size:14px;color:#333333;">${esc(SHOP.fullName)}</p>
 </body>
 </html>`;
 
@@ -149,7 +133,10 @@ function buildDecisionEmail(booking, action) {
 
 function smtpConfig(env) {
   const user = String(env.SMTP_USER || '').trim();
-  const pass = String(env.SMTP_PASS || '').replace(/\s+/g, '');
+  const pass = String(env.SMTP_PASS || '')
+    .trim()
+    .replace(/^["']|["']$/g, '')
+    .replace(/\s+/g, '');
   if (!user || !pass) return null;
   const gmail = /@(gmail|googlemail)\.com$/i.test(user);
   const host = String(env.SMTP_HOST || '').trim() || (gmail ? 'smtp.gmail.com' : '');
@@ -165,20 +152,39 @@ function mailReady(env) {
   return hasFrom && hasProvider;
 }
 
-function encodeSubject(subject) {
-  return `=?UTF-8?B?${Buffer.from(String(subject), 'utf8').toString('base64')}?=`;
+function encodeWord(value) {
+  const str = String(value || '').trim();
+  if (!str) return '';
+  if (/^[\x20-\x7e]+$/.test(str) && !/[,;<>@"]/.test(str)) return str;
+  return `=?UTF-8?B?${Buffer.from(str, 'utf8').toString('base64')}?=`;
+}
+
+function formatAddress(name, email) {
+  const encoded = encodeWord(name);
+  return encoded ? `${encoded} <${email}>` : email;
+}
+
+function rfc5322Date(date = new Date()) {
+  return date.toUTCString().replace(/GMT$/, '+0000');
+}
+
+function messageIdFor(email) {
+  const domain = String(email || 'localhost').split('@')[1] || 'localhost';
+  const rand = require('crypto').randomBytes(8).toString('hex');
+  return `<pc.${Date.now()}.${rand}@${domain}>`;
 }
 
 function buildMime({ from, to, toName, subject, html, text }) {
   const boundary = 'pc' + Date.now().toString(16);
-  const fromLine = from.name ? `${from.name} <${from.email}>` : from.email;
-  const toLine = toName ? `${toName} <${to}>` : to;
   const plain = String(text || '').replace(/\r?\n/g, '\r\n');
   const rich = String(html || '').replace(/\r?\n/g, '\r\n');
   return [
-    `From: ${fromLine}`,
-    `To: ${toLine}`,
-    `Subject: ${encodeSubject(subject)}`,
+    `From: ${formatAddress(from.name, from.email)}`,
+    `To: ${formatAddress(toName, to)}`,
+    `Reply-To: ${from.email}`,
+    `Date: ${rfc5322Date()}`,
+    `Message-ID: ${messageIdFor(from.email)}`,
+    `Subject: ${encodeWord(subject) || 'Appointment'}`,
     'MIME-Version: 1.0',
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
     '',
@@ -288,7 +294,8 @@ async function sendMail({ to, toName, subject, html, text }, env) {
 
   const smtp = smtpConfig(env);
   if (smtp) {
-    return sendSmtp({ ...smtp, from, to, toName, subject, html, text });
+    const fromSmtp = { name: from.name, email: smtp.user };
+    return sendSmtp({ ...smtp, from: fromSmtp, to, toName, subject, html, text });
   }
   if (env.BREVO_API_KEY) {
     return sendBrevo({ to, toName, subject, html, text, from }, env.BREVO_API_KEY);
