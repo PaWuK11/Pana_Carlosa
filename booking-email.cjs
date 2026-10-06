@@ -218,8 +218,17 @@ function smtpConfig(env) {
 function mailReady(env) {
   const from = parseFrom(env.MAIL_FROM, env.MAIL_FROM_NAME || SHOP.name);
   const hasFrom = Boolean(from.email && from.email.includes('@'));
-  const hasProvider = Boolean(smtpConfig(env) || env.BREVO_API_KEY || env.RESEND_API_KEY);
+  const hasProvider = Boolean(
+    webappConfig(env) || smtpConfig(env) || env.BREVO_API_KEY || env.RESEND_API_KEY
+  );
   return hasFrom && hasProvider;
+}
+
+function webappConfig(env) {
+  const url = String(env.GMAIL_WEBAPP_URL || '').trim();
+  const secret = String(env.GMAIL_WEBAPP_SECRET || '').trim();
+  if (!url || !secret) return null;
+  return { url, secret };
 }
 
 function encodeWord(value) {
@@ -362,6 +371,10 @@ async function sendMail({ to, toName, subject, html, text }, env) {
     return { ok: false, error: 'MAIL_FROM is not set' };
   }
 
+  const webapp = webappConfig(env);
+  if (webapp) {
+    return sendGmailWebapp({ ...webapp, from, to, subject, html, text });
+  }
   const smtp = smtpConfig(env);
   if (smtp) {
     const fromSmtp = { name: from.name, email: smtp.user };
@@ -373,7 +386,34 @@ async function sendMail({ to, toName, subject, html, text }, env) {
   if (env.RESEND_API_KEY) {
     return sendResend({ to, subject, html, text, from }, env.RESEND_API_KEY);
   }
-  return { ok: false, error: 'Set SMTP_USER + SMTP_PASS (Gmail) or BREVO_API_KEY' };
+  return { ok: false, error: 'Set GMAIL_WEBAPP_URL or SMTP_USER + SMTP_PASS' };
+}
+
+async function sendGmailWebapp({ url, secret, from, to, subject, html, text }) {
+  const res = await fetch(url, {
+    method: 'POST',
+    redirect: 'follow',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      secret,
+      to,
+      subject,
+      text,
+      html,
+      fromName: from.name,
+      replyTo: from.email
+    })
+  });
+  const raw = await res.text();
+  let data;
+  try { data = JSON.parse(raw); } catch { data = { message: raw }; }
+  if (!res.ok || !data.ok) {
+    return {
+      ok: false,
+      error: data.error || data.message || raw.slice(0, 180) || 'Gmail webapp failed'
+    };
+  }
+  return { ok: true, provider: 'gmail' };
 }
 
 async function sendResend({ to, subject, html, text, from }, apiKey) {
